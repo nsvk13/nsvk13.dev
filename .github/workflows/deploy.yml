@@ -25,12 +25,8 @@ jobs:
             - name: Build Docker image
               run: |
                 docker build -t nsvk13-website:${{ github.sha }} .
+                docker images  # Печать всех образов для проверки
 
             - name: Push Docker image
               run: |
-                docker push simakinnikita/nsvk13-website:${{ github.sha }}
-
-            # - name: Deploy application (need server lul)
-            #  run: |
-              # ssh user@hostname "docker pull nsvk13-website:${{ github.sha }} && docker run -d nsvk13-website:${{ github.sha }}"
-              # echo "Deploying Docker container.."
+                docker push nsvk13-website:${{ github.sha }}
