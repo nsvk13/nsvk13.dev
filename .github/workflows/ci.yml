@@ -53,7 +53,7 @@ jobs:
           docker save nsvk13-website:${{ github.sha }} -o nsvk13-website-${{ github.sha }}.tar
 
       - name: Upload Docker image as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: docker-image
           path: nsvk13-website-${{ github.sha }}.tar
