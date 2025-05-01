@@ -9,7 +9,7 @@ RUN bun install
 
 COPY . .
 
-RUN bun build
+RUN bun run build
 
 # --- Deploy project ---
 FROM oven/bun:1.2.10-slim
