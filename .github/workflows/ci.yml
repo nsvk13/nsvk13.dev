@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@v1
@@ -22,7 +22,7 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Set up Node.js (for linting) # figure out how to use the bun
+      - name: Set up Node.js (for linting)
         uses: actions/setup-node@v2
         with:
           node-version: '18'
@@ -36,7 +36,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@v1
@@ -53,7 +53,7 @@ jobs:
           docker save nsvk13-website:${{ github.sha }} -o nsvk13-website-${{ github.sha }}.tar
 
       - name: Upload Docker image as artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: docker-image
           path: nsvk13-website-${{ github.sha }}.tar
