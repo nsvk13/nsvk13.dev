@@ -24,9 +24,8 @@ jobs:
 
             - name: Build Docker image
               run: |
-                docker build -t nsvk13-website:${{ github.sha }} .
-                docker images  # Печать всех образов для проверки
+                docker build -t ${{ secrets.DOCKER_USERNAME }}/nsvk13-website:${{ github.sha }} .
 
             - name: Push Docker image
               run: |
-                docker push nsvk13-website:${{ github.sha }}
+                docker push ${{ secrets.DOCKER_USERNAME }}/nsvk13-website:${{ github.sha }}
