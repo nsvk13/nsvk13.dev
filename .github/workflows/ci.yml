@@ -23,7 +23,7 @@ jobs:
         run: bun install
 
       - name: Lint Code
-        run: bun lint
+        run: next lint --fix
 
   test:
       runs-on: ubuntu-latest
