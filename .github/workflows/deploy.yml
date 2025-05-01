@@ -24,7 +24,7 @@ jobs:
 
             - name: Build Docker image
               run: |
-                docker build -t nsvk13-webiste:${{ github.sha }} .
+                docker build -t nsvk13-website:${{ github.sha }} .
 
             - name: Push Docker image
               run: |
