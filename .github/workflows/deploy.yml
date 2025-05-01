@@ -28,7 +28,7 @@ jobs:
 
             - name: Push Docker image
               run: |
-                docker push nsvk13-website:${{ github.sha }}
+                docker push simakinnikita/nsvk13-website:${{ github.sha }}
 
             # - name: Deploy application (need server lul)
             #  run: |
