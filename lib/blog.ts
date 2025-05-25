@@ -1,80 +1,101 @@
-import fs from "fs"
-import path from "path"
-import matter from "gray-matter"
-import { unified } from "unified"
-import remarkParse from "remark-parse"
-import remarkRehype from "remark-rehype"
-import rehypeStringify from "rehype-stringify"
+import fs from "fs";
+import path from "path";
+import matter from "gray-matter";
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkGfm from "remark-gfm";
+import remarkRehype from "remark-rehype";
+import rehypeRaw from "rehype-raw";
+import rehypeStringify from "rehype-stringify";
+import rehypeSlug from "rehype-slug";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypeHighlight from "rehype-highlight";
+import { visit } from "unist-util-visit";
+import slugify from "slugify";
+import { PAGE_SIZE } from "./constants";
 
-const postsDirectory = path.join(process.cwd(), "content/posts")
+const postsDirectory = path.join(process.cwd(), "content/posts");
 
-try {
-  if (!fs.existsSync(postsDirectory)) {
-    fs.mkdirSync(postsDirectory, { recursive: true })
-    console.log("Created posts directory")
-  }
-} catch (error) {
-  console.error("Error creating posts directory:", error)
-}
-
-export function getPostSlugs() {
-  try {
-    return fs.existsSync(postsDirectory) ? fs.readdirSync(postsDirectory) : []
-  } catch (error) {
-    console.error("Error reading post slugs:", error)
-    return []
-  }
+export function getPostSlugs(): string[] {
+  return fs.existsSync(postsDirectory)
+    ? fs.readdirSync(postsDirectory).filter((f) => f.endsWith(".md"))
+    : [];
 }
 
 export function getPostBySlug(slug: string) {
-  try {
-    const realSlug = slug.replace(/\.md$/, "")
-    const fullPath = path.join(postsDirectory, `${realSlug}.md`)
-
-    if (!fs.existsSync(fullPath)) {
-      console.error(`Post file not found: ${fullPath}`)
-      return null
-    }
-
-    const fileContents = fs.readFileSync(fullPath, "utf8")
-    const { data, content } = matter(fileContents)
-
-    return {
-      slug: realSlug,
-      frontmatter: data,
-      content,
-    }
-  } catch (error) {
-    console.error(`Error getting post by slug ${slug}:`, error)
-    return null
-  }
+  const realSlug = slug.replace(/\.md$/, "");
+  const fullPath = path.join(postsDirectory, `${realSlug}.md`);
+  if (!fs.existsSync(fullPath)) return null;
+  const source = fs.readFileSync(fullPath, "utf8");
+  const { data, content } = matter(source);
+  return { slug: realSlug, frontmatter: data as any, content };
 }
 
 export async function markdownToHtml(markdown: string) {
-  try {
-    const result = await unified().use(remarkParse).use(remarkRehype).use(rehypeStringify).process(markdown)
-    return result.toString()
-  } catch (error) {
-    console.error("Error converting markdown to HTML:", error)
-    return "<p>Error rendering content</p>"
-  }
+  const result = await unified()
+    .use(remarkParse)
+    .use(remarkGfm)
+    .use(remarkRehype, { allowDangerousHtml: true })
+    .use(rehypeRaw)
+    .use(rehypeSlug)
+    .use(rehypeAutolinkHeadings)
+    .use(rehypeHighlight)
+    .use(rehypeStringify, { allowDangerousHtml: true })
+    .process(markdown);
+  return result.toString();
 }
 
 export function getAllPosts() {
-  try {
-    const slugs = getPostSlugs()
-    const posts = slugs
-      .filter((slug) => slug.endsWith(".md"))
-      .map((slug) => getPostBySlug(slug))
-      .filter((post): post is NonNullable<typeof post> => post !== null)
-      .sort((post1, post2) => {
-        const date1 = post1.frontmatter.date ? new Date(post1.frontmatter.date) : new Date(0)
-        const date2 = post2.frontmatter.date ? new Date(post2.frontmatter.date) : new Date(0)
-        return date2.getTime() - date1.getTime()
-      })
-    return posts
-  } catch (error) {
-    console.error("Error getting all posts:", error)
-    return []
-  }
+  return getPostSlugs()
+    .map((slug) => getPostBySlug(slug))
+    .filter((p): p is NonNullable<typeof p> => p !== null)
+    .sort((a, b) => {
+      const da = a.frontmatter.date ? new Date(a.frontmatter.date) : new Date(0);
+      const db = b.frontmatter.date ? new Date(b.frontmatter.date) : new Date(0);
+      return db.getTime() - da.getTime();
+    });
+}
+
+export function getAllTags(): string[] {
+  return Array.from(
+    new Set(
+      getAllPosts()
+        .flatMap((p) => (p.frontmatter.tags ?? []) as string[])
+        .map((t) => t.toLowerCase())
+    )
+  ).sort();
+}
+
+export function getPostsByTag(tag: string) {
+  const t = tag.toLowerCase();
+  return getAllPosts().filter((p) =>
+    ((p.frontmatter.tags ?? []) as string[]).map((x) => x.toLowerCase()).includes(t)
+  );
+}
+
+export interface Heading { depth: number; text: string; id: string; }
+
+export function extractHeadings(markdown: string): Heading[] {
+  const tree = unified().use(remarkParse).parse(markdown) as any;
+  const headings: Heading[] = [];
+  visit(tree, "heading", (node: any) => {
+    const text = node.children
+      .filter((c: any) => c.type === "text")
+      .map((c: any) => c.value)
+      .join("");
+    const id = slugify(text, { lower: true, strict: true });
+    headings.push({ depth: node.depth, text, id });
+  });
+  return headings;
+}
+
+export function paginate<T>(items: T[], page: number) {
+  const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
+  const current = Math.min(Math.max(1, page), totalPages);
+  const start = (current - 1) * PAGE_SIZE;
+  return {
+    items: items.slice(start, start + PAGE_SIZE),
+    current,
+    totalPages,
+  };
 }
