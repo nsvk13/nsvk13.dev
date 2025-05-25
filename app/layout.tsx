@@ -12,8 +12,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: "nsvk13 | Nikita Simakin",
-  description: "Personal website of Nikita Simakin",
-    generator: 'v0.dev'
+  description: "I wrote this site while I was doing boring job interviews",
 }
 
 export default function RootLayout({
