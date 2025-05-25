@@ -3,7 +3,7 @@ title: "Не сдавайся."
 date: "2025-05-25"
 excerpt: "Смотри назад только для того, чтобы посмотреть, какой путь ты прошёл."
 readingTime: "6 min"
-tags: ["life", "biohacking", "mental health"]
+tags: ["life"]
 ---
 
 # Как говорил один мой знакомый:
