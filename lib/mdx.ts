@@ -3,7 +3,9 @@ import path from "path"
 import matter from "gray-matter"
 import { unified } from "unified"
 import remarkParse from "remark-parse"
+import remarkGfm from "remark-gfm"
 import remarkRehype from "remark-rehype"
+import rehypeRaw from "rehype-raw"
 import rehypeStringify from "rehype-stringify"
 import rehypeHighlight from "rehype-highlight"
 import rehypeSlug from "rehype-slug"
@@ -20,7 +22,6 @@ export function getPostBySlug(slug: string) {
   const fullPath = path.join(postsDirectory, `${realSlug}.md`)
 
   const fileContents = fs.readFileSync(fullPath, "utf8")
-
   const { data, content } = matter(fileContents)
 
   return {
@@ -33,11 +34,13 @@ export function getPostBySlug(slug: string) {
 export async function markdownToHtml(markdown: string) {
   const result = await unified()
     .use(remarkParse)
-    .use(remarkRehype)
+    .use(remarkGfm)
+    .use(remarkRehype, { allowDangerousHtml: true })
+    .use(rehypeRaw)
     .use(rehypeSlug)
     .use(rehypeAutolinkHeadings)
     .use(rehypeHighlight)
-    .use(rehypeStringify)
+    .use(rehypeStringify, { allowDangerousHtml: true })
     .process(markdown)
 
   return result.toString()
