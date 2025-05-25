@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import "highlight.js/styles/github-dark-dimmed.css";
 
 :root {
   --gold: #d4a657;
