@@ -3,6 +3,7 @@ title: "Markdown Guide"
 date: "2023-05-15"
 excerpt: "A comprehensive guide to Markdown syntax and features."
 readingTime: "5 min"
+tags: ["test"]
 ---
 
 # Markdown Guide
@@ -85,6 +86,12 @@ function hello() {
   console.log('Hello, world!');
 }
 \`\`\`
+
+```javascript
+function hello() {
+  console.log('Hello, world!');
+}
+```
 
 ### Blockquotes
 
