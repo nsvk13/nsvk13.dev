@@ -7,21 +7,17 @@ interface Props {
 }
 
 export default async function BlogPage({ searchParams }: Props) {
-  // Next.js 15 требует await для searchParams
   const { page, tag } = await searchParams;
   const pageNum = parseInt(page ?? "1", 10);
 
-  // 1) Собираем посты: либо все, либо только с нужным тегом
   const all = tag ? getPostsByTag(tag) : getAllPosts();
 
-  // 2) Пагинируем
   const { items: posts, current, totalPages } = paginate(all, pageNum);
 
   return (
     <main className="min-h-screen ascii-grid p-4 md:p-8">
       <div className="max-w-3xl mx-auto">
 
-        {/* HEADER */}
         <header className="mb-8 md:mb-12 pt-4 md:pt-16 text-center">
           <h1 className="text-2xl md:text-3xl font-bold mb-2">
             {tag ? `Posts tagged “#${tag}”` : "Blog"}
@@ -43,7 +39,6 @@ export default async function BlogPage({ searchParams }: Props) {
           )}
         </header>
 
-        {/* POSTS LIST */}
         <section className="mb-8 md:mb-12">
           <h2 className="text-xl mb-4 md:mb-6 flex items-center">
             <FileText className="inline-block mr-2 h-4 w-4" />
@@ -57,7 +52,6 @@ export default async function BlogPage({ searchParams }: Props) {
                   key={post.slug}
                   className="ascii-frame p-4 hover:border-white transition-colors"
                 >
-                  {/* Заголовок */}
                   <Link
                     href={`/blog/${post.slug}`}
                     className="block font-bold text-lg mb-2"
@@ -65,7 +59,6 @@ export default async function BlogPage({ searchParams }: Props) {
                     {post.frontmatter.title || "Untitled Post"}
                   </Link>
 
-                  {/* Дата и readingTime */}
                   <div className="flex flex-wrap items-center gap-4 text-sm opacity-70 mb-2">
                     {post.frontmatter.date && (
                       <div className="flex items-center gap-1">
@@ -83,7 +76,6 @@ export default async function BlogPage({ searchParams }: Props) {
                     )}
                   </div>
 
-                  {/* Теги */}
                   {post.frontmatter.tags?.length > 0 && (
                     <div className="flex flex-wrap gap-2 mb-2">
                       {post.frontmatter.tags.map((t: string) => (
@@ -101,12 +93,10 @@ export default async function BlogPage({ searchParams }: Props) {
                     </div>
                   )}
 
-                  {/* Excerpt */}
                   <p className="mb-2">
                     {post.frontmatter.excerpt || "No excerpt available"}
                   </p>
 
-                  {/* Read more */}
                   <div className="mt-3 text-sm">
                     <Link
                       href={`/blog/${post.slug}`}
@@ -125,7 +115,6 @@ export default async function BlogPage({ searchParams }: Props) {
           )}
         </section>
 
-        {/* PAGINATION */}
         <nav className="flex justify-between mb-8">
           {current > 1 ? (
             <Link
@@ -153,7 +142,6 @@ export default async function BlogPage({ searchParams }: Props) {
           )}
         </nav>
 
-        {/* Back to home */}
         <div className="text-center">
           <Link href="/" className="ascii-link inline-flex items-center">
             Back to home
