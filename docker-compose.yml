@@ -1,0 +1,11 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: nsvk13.dev:latest
+    environment:
+      - NODE_ENV=production
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
