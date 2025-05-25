@@ -1,5 +1,5 @@
 {
-  "name": "my-v0-project",
+  "name": "nsvk13.dev",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -22,7 +22,6 @@
     "path": "latest",
     "react": "^19",
     "react-dom": "^19",
-    "react-hook-form": "^7.54.1",
     "rehype-autolink-headings": "latest",
     "rehype-highlight": "latest",
     "rehype-raw": "^7.0.0",
