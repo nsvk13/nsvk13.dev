@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Github, Twitter, AtSign, Mail, FileText, Code, Terminal } from "lucide-react"
+import Webring from "@/components/Webring"
 import Link from "next/link"
 
 export default function Home() {
@@ -216,6 +217,7 @@ export default function Home() {
 
             <footer className="text-center text-sm opacity-70 py-4">
               <p>© {new Date().getFullYear()} Nikita Simakin. All rights reserved.</p>
+              <Webring />
             </footer>
           </>
         )}
