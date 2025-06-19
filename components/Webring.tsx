@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import Image from "next/image"
 
 interface Site {
   id: number
@@ -21,27 +20,43 @@ export default function Webring() {
 
   useEffect(() => {
     fetch("https://webring.otomir23.me/41/data")
-      .then((res) => res.json())
-      .then((d) => setData(d))
-      .catch(() => {
-        setData(null)
-      })
+      .then((r) => r.json())
+      .then(setData)
+      .catch(() => setData(null))
   }, [])
+
+  const renderLink = (site: Site) => (
+    <a
+      key={site.id}
+      href={site.url}
+      className="ascii-link flex items-center"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {site.favicon && (
+        <img
+          src={site.favicon}
+          alt=""
+          width={16}
+          height={16}
+          className="mr-1 shrink-0"
+          onError={(e) => {
+            (e.currentTarget as HTMLImageElement).style.display = "none"
+          }}
+        />
+      )}
+      <span>{site.name}</span>
+    </a>
+  )
 
   if (!data) {
     return (
       <div className="mt-2 flex justify-center gap-2">
-        <a
-          href="https://webring.otomir23.me/41/prev"
-          className="ascii-link"
-        >
+        <a href="https://webring.otomir23.me/41/prev" className="ascii-link">
           prev
         </a>
         <span>webring</span>
-        <a
-          href="https://webring.otomir23.me/41/next"
-          className="ascii-link"
-        >
+        <a href="https://webring.otomir23.me/41/next" className="ascii-link">
           next
         </a>
       </div>
@@ -50,31 +65,9 @@ export default function Webring() {
 
   return (
     <div className="mt-2 flex justify-center gap-4">
-      <a href={data.prev.url} className="ascii-link flex items-center">
-        {data.prev.favicon && (
-          <Image
-            src={data.prev.favicon}
-            alt={data.prev.name}
-            width={16}
-            height={16}
-            className="mr-1"
-          />
-        )}
-        <span>{data.prev.name}</span>
-      </a>
+      {renderLink(data.prev)}
       <span>webring</span>
-      <a href={data.next.url} className="ascii-link flex items-center">
-        {data.next.favicon && (
-          <Image
-            src={data.next.favicon}
-            alt={data.next.name}
-            width={16}
-            height={16}
-            className="mr-1"
-          />
-        )}
-        <span>{data.next.name}</span>
-      </a>
+      {renderLink(data.next)}
     </div>
   )
 }
