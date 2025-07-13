@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Github, Twitter, AtSign, Mail, FileText, Code, Terminal } from "lucide-react"
-import Webring from "@/components/Webring"
 import Link from "next/link"
 
 export default function Home() {
@@ -192,13 +191,13 @@ export default function Home() {
                   <span>GitHub</span>
                 </a>
                 <a
-                  href="https://twitter.com/nsvkjournal"
+                  href="https://x.com/nsvkjournal"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="ascii-link flex items-center"
                 >
                   <Twitter className="h-4 w-4 mr-1" />
-                  <span>Twitter</span>
+                  <span>Twitter (X)</span>
                 </a>
                 <Link href="/blog" className="ascii-link flex items-center">
                   <FileText className="h-4 w-4 mr-1" />
@@ -217,7 +216,6 @@ export default function Home() {
 
             <footer className="text-center text-sm opacity-70 py-4">
               <p>© {new Date().getFullYear()} Nikita Simakin. All rights reserved.</p>
-              <Webring />
             </footer>
           </>
         )}
