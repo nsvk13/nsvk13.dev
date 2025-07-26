@@ -290,3 +290,44 @@ body {
     background-size: 10px 10px;
   }
 }
+
+.cv-content h1 {
+  @apply text-3xl font-bold mb-6 text-white border-b border-gold pb-2;
+}
+
+.cv-content h2 {
+  @apply text-xl font-bold mb-4 mt-8 text-white;
+}
+
+.cv-content h3 {
+  @apply text-lg font-bold mb-2 mt-6 text-white;
+}
+
+.cv-content hr {
+  @apply border-gold my-6;
+}
+
+.cv-content strong {
+  @apply text-white;
+}
+
+.cv-content a {
+  @apply text-white underline hover:text-gold transition-colors;
+}
+
+.cv-content ul {
+  @apply space-y-1;
+}
+
+.cv-content li {
+  @apply relative pl-4;
+}
+
+.cv-content li::before {
+  content: ">";
+  @apply absolute left-0 text-gold;
+}
+
+.cv-content blockquote {
+  @apply border-l-4 border-gold pl-4 italic bg-dark-gray/20 py-2 my-4;
+}
