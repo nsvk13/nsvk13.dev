@@ -93,7 +93,7 @@ export default function Home() {
                   <ul className="list-none space-y-1">
                     <li>Node.js</li>
                     <li>Elysia</li>
-                    <li>GraphQL</li>
+                    <li>Go</li>
                     <li>REST API</li>
                     <li>gRPC</li>
                   </ul>
@@ -103,9 +103,9 @@ export default function Home() {
                   <ul className="list-none space-y-1">
                     <li>Docker</li>
                     <li>Ansible</li>
-                    <li>Helm~</li>
+                    <li>Nginx / Traefik</li>
                     <li>Grafana & Prometheus</li>
-                    <li>Kubernetes</li>
+                    <li>Kubernetes & Helm</li>
                     <li>CI/CD</li>
                     <li>GCP~ / YandexCloude</li>
                     <li>PostgreSQL / Redis / MongoDB~</li>
@@ -202,6 +202,10 @@ export default function Home() {
                 <Link href="/blog" className="ascii-link flex items-center">
                   <FileText className="h-4 w-4 mr-1" />
                   <span>Blog</span>
+                </Link>
+                <Link href="/cv" className="ascii-link flex items-center">
+                  <FileText className="h-4 w-4 mr-1" />
+                  <span>CV</span>
                 </Link>
                 <a href="mailto:contact@nsvk13.dev" className="ascii-link flex items-center">
                   <AtSign  className="h-4 w-4 mr-1" />
