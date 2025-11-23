@@ -1,13 +1,11 @@
-version: '3.8'
-
 services:
-  next-app:
-    container_name: nsvk13-website
+  app:
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
+    image: nsvk13.dev:latest
     environment:
       - NODE_ENV=production
+    ports:
+      - "3000:3000"
     restart: unless-stopped

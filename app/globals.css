@@ -1,0 +1,333 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import "highlight.js/styles/github-dark-dimmed.css";
+
+:root {
+  --gold: #d4a657;
+  --black: #0a0a0a;
+  --dark-gray: #1a1a1a;
+}
+
+body {
+  background-color: var(--black);
+  color: var(--gold);
+  font-feature-settings: "calt" 0;
+  font-variant-ligatures: none;
+}
+
+.ascii-frame {
+  border: 1px solid var(--gold);
+  position: relative;
+}
+
+.ascii-frame::before {
+  content: "+";
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  color: var(--gold);
+}
+
+.ascii-frame::after {
+  content: "+";
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  color: var(--gold);
+}
+
+.ascii-frame-bottom::before {
+  content: "+";
+  position: absolute;
+  bottom: -10px;
+  left: -10px;
+  color: var(--gold);
+}
+
+.ascii-frame-bottom::after {
+  content: "+";
+  position: absolute;
+  bottom: -10px;
+  right: -10px;
+  color: var(--gold);
+}
+
+.ascii-divider {
+  overflow: hidden;
+  text-align: center;
+}
+
+.ascii-divider::before,
+.ascii-divider::after {
+  background-color: var(--gold);
+  content: "";
+  display: inline-block;
+  height: 1px;
+  position: relative;
+  vertical-align: middle;
+  width: 50%;
+}
+
+.ascii-divider::before {
+  right: 0.5em;
+  margin-left: -50%;
+}
+
+.ascii-divider::after {
+  left: 0.5em;
+  margin-right: -50%;
+}
+
+.terminal-cursor {
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  from,
+  to {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.ascii-link {
+  position: relative;
+  color: var(--gold);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.ascii-link:hover {
+  color: white;
+}
+
+.ascii-link::before {
+  content: "[";
+  margin-right: 0.25rem;
+}
+
+.ascii-link::after {
+  content: "]";
+  margin-left: 0.25rem;
+}
+
+.ascii-avatar {
+  position: relative;
+  display: inline-block;
+}
+
+.ascii-avatar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, transparent 65%, var(--gold) 65%, var(--gold) 70%, transparent 70%);
+  opacity: 0.1;
+  mix-blend-mode: overlay;
+}
+
+.ascii-grid {
+  background-size: 20px 20px;
+  background-image: linear-gradient(to right, rgba(212, 166, 87, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(212, 166, 87, 0.05) 1px, transparent 1px);
+}
+
+/* Styles for Markdown content */
+.prose {
+  @apply text-gold;
+}
+
+.prose-gold {
+  --tw-prose-body: var(--gold);
+  --tw-prose-headings: white;
+  --tw-prose-lead: var(--gold);
+  --tw-prose-links: white;
+  --tw-prose-bold: white;
+  --tw-prose-counters: var(--gold);
+  --tw-prose-bullets: var(--gold);
+  --tw-prose-hr: var(--gold);
+  --tw-prose-quotes: var(--gold);
+  --tw-prose-quote-borders: var(--gold);
+  --tw-prose-captions: var(--gold);
+  --tw-prose-code: white;
+  --tw-prose-pre-code: var(--gold);
+  --tw-prose-pre-bg: var(--black);
+  --tw-prose-th-borders: var(--gold);
+  --tw-prose-td-borders: var(--gold);
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+  @apply font-bold;
+}
+
+.prose h1 {
+  @apply text-2xl mt-8 mb-4;
+}
+
+.prose h2 {
+  @apply text-xl mt-8 mb-4;
+}
+
+.prose h3 {
+  @apply text-lg mt-6 mb-3;
+}
+
+.prose p {
+  @apply my-4;
+}
+
+.prose a {
+  @apply underline hover:text-white transition-colors;
+}
+
+.prose ul,
+.prose ol {
+  @apply my-4 pl-6;
+}
+
+.prose ul {
+  @apply list-disc;
+}
+
+.prose ol {
+  @apply list-decimal;
+}
+
+.prose li {
+  @apply my-1;
+}
+
+.prose blockquote {
+  @apply border-l-4 border-gold pl-4 italic my-4;
+}
+
+.prose pre {
+  @apply bg-dark-gray p-4 rounded-none border border-gold overflow-auto my-4;
+}
+
+.prose code {
+  @apply bg-dark-gray px-1.5 py-0.5 rounded-none text-white text-sm;
+}
+
+.prose pre code {
+  @apply bg-transparent p-0;
+}
+
+.prose img {
+  @apply border border-gold my-4;
+}
+
+.prose hr {
+  @apply border-gold my-8;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .ascii-frame::before,
+  .ascii-frame::after,
+  .ascii-frame-bottom::before,
+  .ascii-frame-bottom::after {
+    font-size: 12px;
+  }
+
+  .prose h1 {
+    @apply text-xl mt-6 mb-3;
+  }
+
+  .prose h2 {
+    @apply text-lg mt-6 mb-3;
+  }
+
+  .prose h3 {
+    @apply text-base mt-4 mb-2;
+  }
+
+  .prose pre {
+    @apply p-2 text-sm;
+  }
+
+  .prose code {
+    @apply text-xs;
+  }
+}
+
+/* Improve touch targets on mobile */
+@media (max-width: 640px) {
+  .ascii-link {
+    padding: 0.25rem 0;
+  }
+
+  button,
+  a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+  }
+}
+
+/* Adjust grid for mobile */
+.ascii-grid {
+  background-size: 15px 15px;
+}
+@media (max-width: 640px) {
+  .ascii-grid {
+    background-size: 10px 10px;
+  }
+}
+
+.cv-content h1 {
+  @apply text-3xl font-bold mb-6 text-white border-b border-gold pb-2;
+}
+
+.cv-content h2 {
+  @apply text-xl font-bold mb-4 mt-8 text-white;
+}
+
+.cv-content h3 {
+  @apply text-lg font-bold mb-2 mt-6 text-white;
+}
+
+.cv-content hr {
+  @apply border-gold my-6;
+}
+
+.cv-content strong {
+  @apply text-white;
+}
+
+.cv-content a {
+  @apply text-white underline hover:text-gold transition-colors;
+}
+
+.cv-content ul {
+  @apply space-y-1;
+}
+
+.cv-content li {
+  @apply relative pl-4;
+}
+
+.cv-content li::before {
+  content: ">";
+  @apply absolute left-0 text-gold;
+}
+
+.cv-content blockquote {
+  @apply border-l-4 border-gold pl-4 italic bg-dark-gray/20 py-2 my-4;
+}

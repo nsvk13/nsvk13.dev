@@ -1,30 +1,24 @@
-# --- Build project ---
-FROM oven/bun:1.2.10 as builder
-
-WORKDIR /app
+FROM oven/bun:1 AS builder
+WORKDIR /usr/src/app
 
 COPY package.json bun.lock ./
-
-RUN bun install
+RUN bun install --frozen-lockfile --production
 
 COPY . .
-
 RUN bun run build
 
-# --- Deploy project ---
-FROM oven/bun:1.2.10-slim
-
-WORKDIR /app
-
-COPY --from=builder /app/.next .next
-COPY --from=builder /app/public public
-COPY --from=builder /app/package.json .
-COPY --from=builder /app/bun.lock .
-COPY --from=builder /app/node_modules node_modules
+FROM oven/bun:1 AS runner
+WORKDIR /usr/src/app
 
 ENV NODE_ENV=production
-ENV PORT=3000
+
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY --from=builder /usr/src/app/.next ./.next
+COPY --from=builder /usr/src/app/public ./public
+COPY --from=builder /usr/src/app/next.config.mjs ./next.config.mjs
+COPY --from=builder /usr/src/app/package.json ./package.json
+COPY --from=builder /usr/src/app/bun.lock ./bun.lock
 
 EXPOSE 3000
 
-CMD ["bun", "start"]
+CMD ["bun", "run", "start"]

@@ -1,0 +1,105 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup Bun
+      uses: oven-sh/setup-bun@v1
+      with:
+        bun-version: latest
+
+    - name: Install and build
+      run: |
+        bun install --frozen-lockfile
+        bun run build
+
+    - name: Get version
+      id: version
+      run: |
+        # Получаем последний тег
+        LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+        
+        # Парсим версию
+        VERSION=${LAST_TAG#v}
+        IFS='.' read -ra VERSION_PARTS <<< "$VERSION"
+        MAJOR=${VERSION_PARTS[0]:-0}
+        MINOR=${VERSION_PARTS[1]:-0}
+        PATCH=${VERSION_PARTS[2]:-0}
+        
+        # Просто инкрементим patch
+        PATCH=$((PATCH + 1))
+        NEW_VERSION="v$MAJOR.$MINOR.$PATCH"
+        
+        echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+        echo "version_no_v=$MAJOR.$MINOR.$PATCH" >> $GITHUB_OUTPUT
+
+    - name: Create archives
+      run: |
+        mkdir -p release
+        
+        # Исходники
+        mkdir -p release/nsvk13-${{ steps.version.outputs.version_no_v }}
+        rsync -av \
+          --exclude='.git' \
+          --exclude='.github' \
+          --exclude='node_modules' \
+          --exclude='release' \
+          --exclude='.env*' \
+          --exclude='*.log' \
+          . release/nsvk13-${{ steps.version.outputs.version_no_v }}/
+        
+        # Только build
+        mkdir -p release/nsvk13-build-${{ steps.version.outputs.version_no_v }}
+        cp -r .next release/nsvk13-build-${{ steps.version.outputs.version_no_v }}/
+        cp -r public release/nsvk13-build-${{ steps.version.outputs.version_no_v }}/
+        cp package.json release/nsvk13-build-${{ steps.version.outputs.version_no_v }}/
+        cp next.config.mjs release/nsvk13-build-${{ steps.version.outputs.version_no_v }}/
+        
+        cd release
+        
+        # Архивы
+        tar -czf nsvk13-${{ steps.version.outputs.version_no_v }}.tar.gz nsvk13-${{ steps.version.outputs.version_no_v }}/
+        zip -r nsvk13-${{ steps.version.outputs.version_no_v }}.zip nsvk13-${{ steps.version.outputs.version_no_v }}/
+        tar -czf nsvk13-build-${{ steps.version.outputs.version_no_v }}.tar.gz nsvk13-build-${{ steps.version.outputs.version_no_v }}/
+        zip -r nsvk13-build-${{ steps.version.outputs.version_no_v }}.zip nsvk13-build-${{ steps.version.outputs.version_no_v }}/
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ steps.version.outputs.version }}
+        name: "Release ${{ steps.version.outputs.version }}"
+        body: |
+          ## nsvk13.dev ${{ steps.version.outputs.version }}
+          
+          **Archives:**
+          - `nsvk13-${{ steps.version.outputs.version_no_v }}.tar.gz` - Source code
+          - `nsvk13-${{ steps.version.outputs.version_no_v }}.zip` - Source code  
+          - `nsvk13-build-${{ steps.version.outputs.version_no_v }}.tar.gz` - Build only
+          - `nsvk13-build-${{ steps.version.outputs.version_no_v }}.zip` - Build only
+          
+          **Deploy:**
+          ```bash
+          curl -L https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.version }}/nsvk13-${{ steps.version.outputs.version_no_v }}.tar.gz | tar -xz
+          cd nsvk13-${{ steps.version.outputs.version_no_v }}
+          bun install && bun run start
+          ```
+        files: |
+          release/nsvk13-${{ steps.version.outputs.version_no_v }}.tar.gz
+          release/nsvk13-${{ steps.version.outputs.version_no_v }}.zip
+          release/nsvk13-build-${{ steps.version.outputs.version_no_v }}.tar.gz
+          release/nsvk13-build-${{ steps.version.outputs.version_no_v }}.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
