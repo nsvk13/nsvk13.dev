@@ -72,6 +72,48 @@ export default function Home() {
               </p>
             </section>
 
+                        <section className="mb-12">
+              <div className="ascii-divider mb-6">
+                <span className="px-2">Contact</span>
+              </div>
+              <div className="flex flex-wrap justify-center gap-4">
+                <a
+                  href="https://github.com/nsvk13"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ascii-link flex items-center"
+                >
+                  <Github className="h-4 w-4 mr-1" />
+                  <span>GitHub</span>
+                </a>
+                <a
+                  href="https://x.com/nsvkjournal"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ascii-link flex items-center"
+                >
+                  <Twitter className="h-4 w-4 mr-1" />
+                  <span>Twitter (X)</span>
+                </a>
+                <Link href="/blog" className="ascii-link flex items-center">
+                  <FileText className="h-4 w-4 mr-1" />
+                  <span>Blog</span>
+                </Link>
+                <Link href="/cv" className="ascii-link flex items-center">
+                  <FileText className="h-4 w-4 mr-1" />
+                  <span>CV</span>
+                </Link>
+                <a href="mailto:contact@nsvk13.dev" className="ascii-link flex items-center">
+                  <AtSign  className="h-4 w-4 mr-1" />
+                  <span>Email</span>
+                </a>
+                <a href="https://t.me/nsvkjournal" target="_blank" className="ascii-link flex items-center">
+                  <Mail  className="h-4 w-4 mr-1" />
+                  <span>Telegram</span>
+                </a>
+              </div>
+            </section>
+
             <section className="mb-12">
               <h2 className="text-xl mb-4 flex items-center">
                 <Code className="inline-block mr-2 h-4 w-4" />
@@ -173,48 +215,6 @@ export default function Home() {
                   <p className="text-sm opacity-70 mb-2">JVM, Docker, Pterodactyl Panel, Iptables, Cloudflare, GCP, Python, Django, Rust, Tauri, Vue.js and more powerfull tools</p>
                   <p>Grandiose Minecraft project in the CIS, with its self-written solutions, automation of game currency (bank system), its own luncher, and many other cool things.</p>
                 </div>
-              </div>
-            </section>
-
-            <section className="mb-12">
-              <div className="ascii-divider mb-6">
-                <span className="px-2">Contact</span>
-              </div>
-              <div className="flex flex-wrap justify-center gap-4">
-                <a
-                  href="https://github.com/nsvk13"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="ascii-link flex items-center"
-                >
-                  <Github className="h-4 w-4 mr-1" />
-                  <span>GitHub</span>
-                </a>
-                <a
-                  href="https://x.com/nsvkjournal"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="ascii-link flex items-center"
-                >
-                  <Twitter className="h-4 w-4 mr-1" />
-                  <span>Twitter (X)</span>
-                </a>
-                <Link href="/blog" className="ascii-link flex items-center">
-                  <FileText className="h-4 w-4 mr-1" />
-                  <span>Blog</span>
-                </Link>
-                <Link href="/cv" className="ascii-link flex items-center">
-                  <FileText className="h-4 w-4 mr-1" />
-                  <span>CV</span>
-                </Link>
-                <a href="mailto:contact@nsvk13.dev" className="ascii-link flex items-center">
-                  <AtSign  className="h-4 w-4 mr-1" />
-                  <span>Email</span>
-                </a>
-                <a href="https://t.me/nsvkjournal" target="_blank" className="ascii-link flex items-center">
-                  <Mail  className="h-4 w-4 mr-1" />
-                  <span>Telegram</span>
-                </a>
               </div>
             </section>
 
