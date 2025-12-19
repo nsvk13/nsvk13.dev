@@ -12,9 +12,10 @@ export async function generateStaticParams() {
 export default async function BlogPostPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const post = getPostBySlug(params.slug);
+  const { slug } = await params;
+  const post = getPostBySlug(slug);
 
   if (!post || !post.content) {
     notFound();
@@ -24,7 +25,6 @@ export default async function BlogPostPage({
 
   return (
     <>
-      {/* ======== Instant View / SEO мета-теги ======== */}
       <Head>
         <title>{post.frontmatter.title}</title>
         <meta
@@ -60,7 +60,6 @@ export default async function BlogPostPage({
             </Link>
           </header>
 
-          {/* ======== Основной контент статьи (важно для Telegram IV) ======== */}
           <article className="post ascii-frame ascii-frame-bottom p-4 md:p-6 mb-8 md:mb-12">
             <h1 className="text-xl md:text-3xl font-bold mb-3 md:mb-4">
               {post.frontmatter.title || "Untitled Post"}
@@ -101,7 +100,6 @@ export default async function BlogPostPage({
               <span className="px-2">nsvk13</span>
             </div>
 
-            {/* ======== Сам текст поста ======== */}
             <div
               id="post-content"
               className="prose prose-gold max-w-none mt-6"

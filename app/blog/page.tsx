@@ -3,7 +3,7 @@ import { getAllPosts, getPostsByTag, paginate } from "@/lib/blog";
 import { Calendar, Clock, FileText } from "lucide-react";
 
 interface Props {
-  searchParams: { page?: string; tag?: string };
+  searchParams: Promise<{ page?: string; tag?: string }>;
 }
 
 export default async function BlogPage({ searchParams }: Props) {
@@ -20,7 +20,7 @@ export default async function BlogPage({ searchParams }: Props) {
 
         <header className="mb-8 md:mb-12 pt-4 md:pt-16 text-center">
           <h1 className="text-2xl md:text-3xl font-bold mb-2">
-            {tag ? `Posts tagged “#${tag}”` : "Blog"}
+            {tag ? `Posts tagged "#${tag}"` : "Blog"}
           </h1>
           <p className="opacity-70">
             {tag
@@ -110,7 +110,7 @@ export default async function BlogPage({ searchParams }: Props) {
             </div>
           ) : (
             <div className="ascii-frame p-4 md:p-6 text-center">
-              <p>No posts found{tag ? ` for tag “${tag}”` : ""}.</p>
+              <p>No posts found{tag ? ` for tag "${tag}"` : ""}.</p>
             </div>
           )}
         </section>
