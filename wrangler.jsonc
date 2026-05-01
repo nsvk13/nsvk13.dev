@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "nsvk13-dev",
+  "name": "nsvk13-dev-prod",
   "main": ".open-next/worker.js",
   "compatibility_date": "2026-04-30",
   "compatibility_flags": ["nodejs_compat"],
