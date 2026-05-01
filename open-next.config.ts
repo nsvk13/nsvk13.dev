@@ -1,11 +1,12 @@
 import type { OpenNextConfig } from "@opennextjs/cloudflare";
+import r2IncrementalCache from "@opennextjs/cloudflare/overrides/incremental-cache/r2-incremental-cache";
 
 const config: OpenNextConfig = {
   default: {
     override: {
       wrapper: "cloudflare-node",
       converter: "edge",
-      incrementalCache: async () => (await import("@opennextjs/cloudflare")).r2IncrementalCache,
+      incrementalCache: async () => r2IncrementalCache,
       tagCache: "dummy",
       queue: "dummy",
     },
