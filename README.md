@@ -2,8 +2,8 @@
 
 [nsvk13.dev](https://nsvk13.dev) my personal website with my portfolio, blog and biography.
 
-- Made with `NextJS`, `TailwindCSS`, `TypeScript`.
-- Uses `Bun`, `Vercel`.
+- Made with `NextJS`, `TailwindCSS`, `TypeScript`
+- Uses `Bun`, `Vercel`
 
 # Local development
 
