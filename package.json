@@ -3,13 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "build:posts": "bun run scripts/build-posts.ts",
+    "predev": "bun run build:posts",
+    "prebuild": "bun run build:posts",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
-    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview"
+    "deploy": "bun run build:posts && opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "preview": "bun run build:posts && opennextjs-cloudflare build && opennextjs-cloudflare preview"
   },
   "dependencies": {
     "@tailwindcss/typography": "^0.5.19",

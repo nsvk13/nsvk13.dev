@@ -1,60 +1,35 @@
-import fs from "fs";
-import path from "path";
-import matter from "gray-matter";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import { visit } from "unist-util-visit";
 import slugify from "slugify";
+import { posts as ALL_POSTS } from "./posts.generated";
+import type { Post, PostFrontmatter } from "./blog-types";
+
+export type { Post, PostFrontmatter };
 
 const PAGE_SIZE = 6;
-const postsDirectory = path.join(process.cwd(), "content/posts");
 const SLUG_PATTERN = /^[a-z0-9][a-z0-9-]*$/;
-
-export interface PostFrontmatter {
-  title?: string;
-  date?: string;
-  description?: string;
-  excerpt?: string;
-  cover?: string;
-  readingTime?: string;
-  tags?: string[];
-}
-
-export interface Post {
-  slug: string;
-  frontmatter: PostFrontmatter;
-  content: string;
-}
 
 export function isValidSlug(slug: string): boolean {
   return SLUG_PATTERN.test(slug);
 }
 
 export function getPostSlugs(): string[] {
-  return fs.existsSync(postsDirectory)
-    ? fs.readdirSync(postsDirectory).filter((f) => f.endsWith(".md"))
-    : [];
+  return ALL_POSTS.map((p) => p.slug);
 }
 
 export function getPostBySlug(slug: string): Post | null {
   const realSlug = slug.replace(/\.md$/, "");
   if (!isValidSlug(realSlug)) return null;
-  const fullPath = path.join(postsDirectory, `${realSlug}.md`);
-  if (!fs.existsSync(fullPath)) return null;
-  const source = fs.readFileSync(fullPath, "utf8");
-  const { data, content } = matter(source);
-  return { slug: realSlug, frontmatter: data as PostFrontmatter, content };
+  return ALL_POSTS.find((p) => p.slug === realSlug) ?? null;
 }
 
 export function getAllPosts(): Post[] {
-  return getPostSlugs()
-    .map((slug) => getPostBySlug(slug))
-    .filter((p): p is Post => p !== null)
-    .sort((a, b) => {
-      const da = a.frontmatter.date ? new Date(a.frontmatter.date) : new Date(0);
-      const db = b.frontmatter.date ? new Date(b.frontmatter.date) : new Date(0);
-      return db.getTime() - da.getTime();
-    });
+  return [...ALL_POSTS].sort((a, b) => {
+    const da = a.frontmatter.date ? new Date(a.frontmatter.date) : new Date(0);
+    const db = b.frontmatter.date ? new Date(b.frontmatter.date) : new Date(0);
+    return db.getTime() - da.getTime();
+  });
 }
 
 export function getAllTags(): string[] {
