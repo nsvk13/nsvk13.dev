@@ -3,18 +3,32 @@ import path from "path";
 import matter from "gray-matter";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
-import remarkGfm from "remark-gfm";
-import remarkRehype from "remark-rehype";
-import rehypeRaw from "rehype-raw";
-import rehypeStringify from "rehype-stringify";
-import rehypeSlug from "rehype-slug";
-import rehypeAutolinkHeadings from "rehype-autolink-headings";
-import rehypeHighlight from "rehype-highlight";
 import { visit } from "unist-util-visit";
 import slugify from "slugify";
-import { PAGE_SIZE } from "./constants";
 
+const PAGE_SIZE = 6;
 const postsDirectory = path.join(process.cwd(), "content/posts");
+const SLUG_PATTERN = /^[a-z0-9][a-z0-9-]*$/;
+
+export interface PostFrontmatter {
+  title?: string;
+  date?: string;
+  description?: string;
+  excerpt?: string;
+  cover?: string;
+  readingTime?: string;
+  tags?: string[];
+}
+
+export interface Post {
+  slug: string;
+  frontmatter: PostFrontmatter;
+  content: string;
+}
+
+export function isValidSlug(slug: string): boolean {
+  return SLUG_PATTERN.test(slug);
+}
 
 export function getPostSlugs(): string[] {
   return fs.existsSync(postsDirectory)
@@ -22,33 +36,20 @@ export function getPostSlugs(): string[] {
     : [];
 }
 
-export function getPostBySlug(slug: string) {
+export function getPostBySlug(slug: string): Post | null {
   const realSlug = slug.replace(/\.md$/, "");
+  if (!isValidSlug(realSlug)) return null;
   const fullPath = path.join(postsDirectory, `${realSlug}.md`);
   if (!fs.existsSync(fullPath)) return null;
   const source = fs.readFileSync(fullPath, "utf8");
   const { data, content } = matter(source);
-  return { slug: realSlug, frontmatter: data as any, content };
+  return { slug: realSlug, frontmatter: data as PostFrontmatter, content };
 }
 
-export async function markdownToHtml(markdown: string) {
-  const result = await unified()
-    .use(remarkParse)
-    .use(remarkGfm)
-    .use(remarkRehype, { allowDangerousHtml: true })
-    .use(rehypeRaw)
-    .use(rehypeSlug)
-    .use(rehypeAutolinkHeadings)
-    .use(rehypeHighlight)
-    .use(rehypeStringify, { allowDangerousHtml: true })
-    .process(markdown);
-  return result.toString();
-}
-
-export function getAllPosts() {
+export function getAllPosts(): Post[] {
   return getPostSlugs()
     .map((slug) => getPostBySlug(slug))
-    .filter((p): p is NonNullable<typeof p> => p !== null)
+    .filter((p): p is Post => p !== null)
     .sort((a, b) => {
       const da = a.frontmatter.date ? new Date(a.frontmatter.date) : new Date(0);
       const db = b.frontmatter.date ? new Date(b.frontmatter.date) : new Date(0);
@@ -60,20 +61,24 @@ export function getAllTags(): string[] {
   return Array.from(
     new Set(
       getAllPosts()
-        .flatMap((p) => (p.frontmatter.tags ?? []) as string[])
+        .flatMap((p) => p.frontmatter.tags ?? [])
         .map((t) => t.toLowerCase())
     )
   ).sort();
 }
 
-export function getPostsByTag(tag: string) {
+export function getPostsByTag(tag: string): Post[] {
   const t = tag.toLowerCase();
   return getAllPosts().filter((p) =>
-    ((p.frontmatter.tags ?? []) as string[]).map((x) => x.toLowerCase()).includes(t)
+    (p.frontmatter.tags ?? []).map((x) => x.toLowerCase()).includes(t)
   );
 }
 
-export interface Heading { depth: number; text: string; id: string; }
+export interface Heading {
+  depth: number;
+  text: string;
+  id: string;
+}
 
 export function extractHeadings(markdown: string): Heading[] {
   const tree = unified().use(remarkParse).parse(markdown) as any;
@@ -99,3 +104,5 @@ export function paginate<T>(items: T[], page: number) {
     totalPages,
   };
 }
+
+export { markdownToHtml } from "./markdown";

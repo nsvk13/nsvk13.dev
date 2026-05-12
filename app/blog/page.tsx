@@ -76,9 +76,9 @@ export default async function BlogPage({ searchParams }: Props) {
                     )}
                   </div>
 
-                  {post.frontmatter.tags?.length > 0 && (
+                  {post.frontmatter.tags && post.frontmatter.tags.length > 0 && (
                     <div className="flex flex-wrap gap-2 mb-2">
-                      {post.frontmatter.tags.map((t: string) => (
+                      {post.frontmatter.tags.map((t) => (
                         <Link
                           key={t}
                           href={{

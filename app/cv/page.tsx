@@ -1,19 +1,18 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { FileText, ArrowLeft } from "lucide-react";
-import { getCVByLanguage, markdownToHtml } from "@/lib/cv";
+import { getCVByLanguage, isLanguage, markdownToHtml } from "@/lib/cv";
 import CVClient from "./cv-client";
 
 interface Props {
-  searchParams: { lang?: string };
+  searchParams: Promise<{ lang?: string }>;
 }
 
 export default async function CVPage({ searchParams }: Props) {
   const { lang } = await searchParams;
-  const currentLang = (lang === "en" ? "en" : "ru") as "ru" | "en";
+  const currentLang = isLanguage(lang) ? lang : "ru";
 
   const cvData = getCVByLanguage(currentLang);
-  
   if (!cvData) {
     notFound();
   }
@@ -39,10 +38,9 @@ export default async function CVPage({ searchParams }: Props) {
                 <span>Curriculum Vitae</span>
               </h1>
               <p className="opacity-70">
-                {currentLang === "ru" 
-                  ? "DevOps инженер & Full-Stack разработчик" 
-                  : "DevOps Engineer & Full-Stack Developer"
-                }
+                {currentLang === "ru"
+                  ? "DevOps инженер & Full-Stack разработчик"
+                  : "DevOps Engineer & Full-Stack Developer"}
               </p>
             </div>
 
