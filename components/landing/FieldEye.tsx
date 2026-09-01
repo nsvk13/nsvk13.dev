@@ -24,6 +24,7 @@ export default function FieldEye() {
   const [pupilShift, setPupilShift] = useState(0)
   const rootRef = useRef<HTMLDivElement>(null)
   const hoverTimers = useRef<ReturnType<typeof setTimeout>[]>([])
+  const hovering = useRef(false)
 
   useEffect(() => {
     if (sessionStorage.getItem("field-eye-shut") === "1") setShut(true)
@@ -78,8 +79,13 @@ export default function FieldEye() {
     hoverTimers.current = []
   }
 
+  // React synthesizes extra enter/leave events when children swap under
+  // a stationary cursor (blink frames, pupil span) — so the enter arms
+  // only once, and a leave whose coordinates are still inside the eye
+  // is ignored as synthetic.
   const onEnter = () => {
-    if (shut) return
+    if (shut || hovering.current) return
+    hovering.current = true
     clearHoverTimers()
     hoverTimers.current.push(
       setTimeout(() => {
@@ -96,7 +102,22 @@ export default function FieldEye() {
     )
   }
 
-  const onLeave = () => clearHoverTimers()
+  const onLeave = (e: React.MouseEvent) => {
+    const el = rootRef.current
+    if (el) {
+      const r = el.getBoundingClientRect()
+      if (
+        e.clientX >= r.left &&
+        e.clientX <= r.right &&
+        e.clientY >= r.top &&
+        e.clientY <= r.bottom
+      ) {
+        return // synthetic leave, pointer never left
+      }
+    }
+    hovering.current = false
+    clearHoverTimers()
+  }
 
   const lines = shut ? EYE_CLOSED : frame === "open" ? EYE_OPEN : frame === "mid" ? EYE_MID : EYE_CLOSED
   const pupilLine = lines[EYE_PUPIL_LINE]

@@ -32,6 +32,7 @@ export default function Portrait({
   const [frozen, setFrozen] = useState(false)
   const [flash, setFlash] = useState(false)
   const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const lastAdvance = useRef(0)
 
   useEffect(() => {
     try {
@@ -43,8 +44,14 @@ export default function Portrait({
     } catch {}
   }, [])
 
+  // swapping img↔pre under a stationary cursor makes React synthesize a
+  // second mouseenter right after a click — debounce so one gesture
+  // advances exactly one state
   const advance = useCallback(() => {
     if (frozen) return
+    const now = performance.now()
+    if (now - lastAdvance.current < 250) return
+    lastAdvance.current = now
     setIdx((v) => (v + 1) % STATES.length)
   }, [frozen])
 

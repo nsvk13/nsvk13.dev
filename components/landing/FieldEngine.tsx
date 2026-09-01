@@ -203,7 +203,7 @@ export default function FieldEngine() {
     const bar = document.createElement("div")
     bar.setAttribute("aria-hidden", "true")
     bar.style.cssText =
-      "position:fixed;left:0;width:100vw;height:6px;background:#E6E1D6;mix-blend-mode:difference;pointer-events:none;z-index:80;display:none;"
+      "position:fixed;left:0;top:0;width:100vw;height:6px;background:#E6E1D6;mix-blend-mode:difference;pointer-events:none;z-index:80;display:none;"
     document.body.appendChild(bar)
     cleanups.push(() => bar.remove())
 

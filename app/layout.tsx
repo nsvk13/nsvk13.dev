@@ -2,7 +2,6 @@ import type React from "react"
 import type { Metadata } from "next"
 import { JetBrains_Mono, Archivo, DotGothic16 } from "next/font/google"
 import "./globals.css"
-import { Analytics } from "@vercel/analytics/react"
 import { Suspense } from "react"
 
 const jetbrainsMono = JetBrains_Mono({
@@ -39,10 +38,7 @@ export default function RootLayout({
         className={`${jetbrainsMono.variable} ${archivo.variable} ${dotGothic.variable} font-mono bg-black text-gold`}
       >
         <div className="grain" aria-hidden="true" />
-        <Suspense>
-          {children}
-          <Analytics />
-        </Suspense>
+        <Suspense>{children}</Suspense>
       </body>
     </html>
   )
