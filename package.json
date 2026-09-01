@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "build:posts": "bun run scripts/build-posts.ts",
-    "predev": "bun run build:posts",
-    "prebuild": "bun run build:posts",
+    "build:assets": "bun run scripts/prepare-portrait.mjs && bun run scripts/build-meta.mjs",
+    "predev": "bun run build:posts && bun run build:assets",
+    "prebuild": "bun run build:posts && bun run build:assets",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -17,6 +18,7 @@
   "dependencies": {
     "@tailwindcss/typography": "^0.5.19",
     "@vercel/analytics": "^1.6.1",
+    "animejs": "^4.5.0",
     "clsx": "^2.1.1",
     "gray-matter": "^4.0.3",
     "highlight.js": "^11.11.1",
@@ -40,8 +42,10 @@
   "devDependencies": {
     "@opennextjs/cloudflare": "^1.19.5",
     "@types/node": "^22.19.3",
+    "@types/pngjs": "^6.0.5",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
+    "pngjs": "^7.0.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.19",
     "typescript": "^5.9.3",

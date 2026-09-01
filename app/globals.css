@@ -331,3 +331,490 @@ body {
 .cv-content blockquote {
   @apply border-l-4 border-gold pl-4 italic bg-dark-gray/20 py-2 my-4;
 }
+/* ============================================================
+   STILL ONLINE — the field layer (landing visual identity)
+   Blog/CV styles above are untouched; everything below is
+   scoped to .f-* classes, the grain overlay and selection.
+   ============================================================ */
+
+:root {
+  --field: #060606;
+  --hole: #000000;
+  --raised: #0b0b0a;
+  --paper: #e6e1d6;
+  --ash: #8c8880;
+  --ghostmeta: #4a4842;
+  --wire: #26251f;
+  --ghost: #1a1915;
+  --ember: #ff4b11;
+}
+
+/* --- film grain, whole site --- */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+}
+
+/* --- print inversion selection (site-wide) --- */
+::selection {
+  background: var(--paper);
+  color: var(--field);
+}
+.f-quote ::selection,
+.f-quote::selection {
+  background: var(--ember);
+  color: var(--field);
+}
+
+/* --- root of the field --- */
+.f-root {
+  background: var(--field);
+  color: var(--paper);
+  font-size: 15px;
+  line-height: 1.75;
+  overflow-x: clip;
+  position: relative;
+  font-variant-ligatures: none;
+}
+.f-root a:focus-visible,
+.f-root button:focus-visible,
+.f-root input:focus-visible,
+.f-root summary:focus-visible {
+  outline: 1px dashed currentColor;
+  outline-offset: 2px;
+}
+
+.f-skip {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 10000;
+  background: var(--paper);
+  color: var(--field);
+  padding: 4px 8px;
+  font-size: 12px;
+}
+.f-skip:focus {
+  left: 8px;
+  top: 8px;
+}
+
+/* --- grid & composition --- */
+.f-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1.5rem;
+  padding-inline: clamp(1rem, 4vw, 4rem);
+}
+@media (max-width: 767px) {
+  .f-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+  }
+}
+
+/* --- typography roles --- */
+.f-meta {
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ghostmeta);
+  line-height: 1.6;
+}
+.f-meta-ash {
+  color: var(--ash);
+}
+.f-body {
+  font-family: var(--font-mono), monospace;
+  font-size: 15px;
+  line-height: 1.75;
+  max-width: 64ch;
+  color: var(--paper);
+}
+.f-display {
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-weight: 550;
+  letter-spacing: -0.02em;
+  line-height: 0.95;
+  color: var(--paper);
+}
+.f-vert {
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-stretch: 75%;
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--ghostmeta);
+  writing-mode: vertical-rl;
+  white-space: nowrap;
+  user-select: none;
+}
+.f-dot {
+  font-family: var(--font-dot), monospace;
+}
+.f-num {
+  font-variant-numeric: tabular-nums;
+}
+.f-ghostnum {
+  position: absolute;
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-weight: 550;
+  font-size: 18vw;
+  line-height: 0.8;
+  color: var(--ghost);
+  user-select: none;
+  pointer-events: none;
+  z-index: -1;
+}
+@media (max-width: 767px) {
+  .f-ghostnum {
+    font-size: 30vw;
+  }
+}
+
+/* --- ASCII / pre --- */
+.f-pre {
+  font-family: var(--font-mono), monospace;
+  font-variant-ligatures: none;
+  line-height: 1.25;
+  white-space: pre;
+  margin: 0;
+  color: var(--ash);
+}
+
+/* --- wires & lights --- */
+.f-wire {
+  height: 1px;
+  background: var(--wire);
+  border: 0;
+  margin: 0;
+  transform-origin: left center;
+}
+.f-light {
+  position: absolute;
+  font-size: 10px;
+  color: var(--ghostmeta);
+  user-select: none;
+  line-height: 1;
+}
+.f-light-ember {
+  color: var(--ember);
+  text-decoration: none;
+}
+.f-light-ember:hover {
+  color: var(--ember);
+}
+
+/* --- links --- */
+.f-link {
+  color: var(--paper);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: none;
+}
+.f-link:hover {
+  background: var(--paper);
+  color: var(--field);
+  text-decoration: none;
+}
+
+/* --- catalogue etikett (box-drawing labels) --- */
+.f-etikett {
+  font-family: var(--font-mono), monospace;
+  font-variant-ligatures: none;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--ash);
+  white-space: pre;
+  overflow-x: auto;
+  max-width: 100%;
+}
+.f-etikett a {
+  color: var(--paper);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.f-etikett a:hover {
+  background: var(--paper);
+  color: var(--field);
+}
+
+/* --- inverse SPEC sheet --- */
+.f-invert {
+  background: var(--paper);
+  color: var(--field);
+  border-top: 1px solid var(--wire);
+  border-bottom: 1px solid var(--wire);
+}
+.f-invert .f-meta {
+  color: #6b675e;
+}
+.f-invert table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 13px;
+  font-family: var(--font-mono), monospace;
+}
+.f-invert td,
+.f-invert th {
+  border: 1px solid var(--field);
+  padding: 10px 14px;
+  text-align: left;
+  vertical-align: top;
+  font-weight: 400;
+}
+.f-invert th {
+  width: 12ch;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 11px;
+  white-space: nowrap;
+}
+.f-invert tr {
+  transition: none;
+}
+.f-invert tbody tr:hover {
+  background: var(--field);
+  color: var(--paper);
+}
+.f-invert tbody tr:hover td,
+.f-invert tbody tr:hover th {
+  border-color: var(--field);
+}
+.f-invert ::selection {
+  background: var(--field);
+  color: var(--paper);
+}
+.f-invert .f-vert {
+  color: #6b675e;
+}
+
+/* --- portrait --- */
+.f-pix {
+  image-rendering: pixelated;
+}
+.f-scanlines {
+  position: relative;
+}
+.f-scanlines::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0 2px,
+    rgba(0, 0, 0, 0.25) 2px 3px
+  );
+}
+
+/* annotation callout line */
+.f-callout {
+  position: relative;
+}
+.f-callout::before {
+  content: "";
+  position: absolute;
+  width: 1px;
+  background: var(--ash);
+  left: -1.25rem;
+  top: -2.5rem;
+  height: 2.5rem;
+}
+
+/* --- the checkbox that unchecks itself --- */
+.f-check {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  border: 1px solid var(--ash);
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0;
+}
+.f-check:checked::after {
+  content: "\00d7";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--paper);
+  font-size: 11px;
+  line-height: 1;
+  font-family: var(--font-mono), monospace;
+}
+.f-check.f-check-fading::after {
+  transition: opacity 600ms linear;
+  opacity: 0;
+}
+
+/* --- LOG rows --- */
+.f-logrow {
+  display: flex;
+  gap: 1ch;
+  align-items: baseline;
+  font-size: 14px;
+  white-space: nowrap;
+}
+.f-logrow .f-leader {
+  flex: 1;
+  overflow: hidden;
+  color: var(--ghostmeta);
+  user-select: none;
+}
+@media (max-width: 767px) {
+  .f-logrow {
+    white-space: normal;
+  }
+}
+
+/* --- mobile bottom nav wire --- */
+.f-mobilenav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: var(--field);
+  border-top: 1px solid var(--wire);
+  font-size: 12px;
+  display: flex;
+  gap: 1.25rem;
+  justify-content: center;
+  padding: 10px 8px calc(10px + env(safe-area-inset-bottom));
+}
+.f-mobilenav a {
+  color: var(--ash);
+  text-decoration: none;
+  padding: 2px 4px;
+}
+.f-mobilenav a:hover {
+  background: var(--paper);
+  color: var(--field);
+}
+@media (min-width: 768px) {
+  .f-mobilenav {
+    display: none;
+  }
+}
+
+/* --- ember rule: accent only ever glyph-sized --- */
+.f-ember {
+  color: var(--ember);
+}
+
+/* cursor satellite dot */
+.f-cursor-dot {
+  position: fixed;
+  width: 3px;
+  height: 3px;
+  background: var(--ember);
+  border-radius: 0;
+  pointer-events: none;
+  z-index: 90;
+  left: 0;
+  top: 0;
+  will-change: transform;
+}
+
+/* attendant */
+.f-attendant {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 40;
+  pointer-events: none;
+  font-size: 12px;
+  color: var(--ash);
+  will-change: transform;
+}
+.f-attendant.f-far {
+  font-size: 8px;
+  position: absolute;
+}
+
+/* reduced motion: no decorative keyframes exist outside this gate */
+@media (prefers-reduced-motion: no-preference) {
+  .f-breathe {
+    animation: f-breathe 1s steps(2, end) infinite;
+  }
+  @keyframes f-breathe {
+    0% {
+      opacity: 0.6;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0.6;
+    }
+  }
+}
+
+/* transit zones */
+.f-transit {
+  position: relative;
+}
+
+/* work record titles */
+.f-rec-title {
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-weight: 550;
+  font-size: 2.5rem;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--paper);
+}
+.f-rec-title .f-char {
+  display: inline-block;
+  will-change: transform;
+}
+
+/* banner details */
+.f-banner-details summary {
+  cursor: pointer;
+  list-style: none;
+}
+.f-banner-details summary::-webkit-details-marker {
+  display: none;
+}
+.f-banner-details pre {
+  font-size: 10px;
+  color: var(--ghostmeta);
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin-top: 6px;
+  max-width: 34ch;
+}
+
+/* static attendant for prefers-reduced-motion: the resident stays,
+   the movement goes */
+.f-rm-attendant {
+  display: none;
+  position: absolute;
+  right: 15%;
+  top: -60px;
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+  line-height: 1.25;
+  color: var(--ash);
+  white-space: pre;
+  margin: 0;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .f-rm-attendant {
+    display: block;
+  }
+}
