@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
-import { animate, stagger, utils } from "animejs"
+import { animate, stagger, utils, onScroll, svg } from "animejs"
 import { SCRAMBLE_GLYPHS, SHADES, mulberry32, EYE_OPEN } from "./art"
 
 // FieldEngine drives every decorative behavior of the field that
@@ -272,8 +272,8 @@ export default function FieldEngine() {
           const lights = Array.from(document.querySelectorAll<HTMLElement>(".f-light")).filter(inViewport)
           const el = pick(lights)
           if (!el) return
-          el.style.opacity = "0"
-          setTimeout(() => (el.style.opacity = ""), 3000)
+          el.style.visibility = "hidden"
+          setTimeout(() => (el.style.visibility = ""), 3000)
         },
       },
       {
@@ -319,8 +319,8 @@ export default function FieldEngine() {
             sessionStorage.setItem("field-lights-blinked", "1")
           } catch {}
           const lights = document.querySelectorAll<HTMLElement>(".f-light")
-          lights.forEach((l) => (l.style.opacity = "0"))
-          setTimeout(() => lights.forEach((l) => (l.style.opacity = "")), 150)
+          lights.forEach((l) => (l.style.visibility = "hidden"))
+          setTimeout(() => lights.forEach((l) => (l.style.visibility = "")), 150)
         },
       },
     ]
@@ -419,6 +419,87 @@ export default function FieldEngine() {
       if (cond) cond.textContent = "FIELD CONDITION: UNSUPERVISED"
       const nightLine = document.querySelector<HTMLElement>("[data-night-line]")
       if (nightLine) nightLine.style.display = "block"
+    }
+
+    // ---- pulses travelling along the wires ----
+    document.querySelectorAll<HTMLElement>("[data-wire]").forEach((hr) => {
+      const host = hr.parentElement
+      if (!host) return
+      host.style.position = "relative"
+      const pulse = document.createElement("span")
+      pulse.className = "f-pulse"
+      pulse.setAttribute("aria-hidden", "true")
+      host.appendChild(pulse)
+      let t: ReturnType<typeof setTimeout>
+      const run = () => {
+        const w = hr.getBoundingClientRect().width
+        const top = hr.offsetTop
+        pulse.style.top = `${top}px`
+        pulse.style.left = `${hr.offsetLeft}px`
+        if (w > 120 && inViewport(hr)) {
+          utils.set(pulse, { opacity: 0.9, x: 0 })
+          animate(pulse, {
+            x: [0, w - 48],
+            duration: 1400 + w * 0.6,
+            ease: "linear",
+            onComplete: () => utils.set(pulse, { opacity: 0 }),
+          })
+        }
+        t = setTimeout(run, 9000 + Math.random() * 16000)
+      }
+      t = setTimeout(run, 2000 + Math.random() * 9000)
+      cleanups.push(() => clearTimeout(t))
+    })
+
+    // ---- scroll-linked: titles loosen their letters, ghosts drift ----
+    document.querySelectorAll<HTMLElement>("[data-scroll-spread]").forEach((h) => {
+      animate(h, {
+        letterSpacing: ["-0.02em", "0.14em"],
+        ease: "linear",
+        autoplay: onScroll({ target: h, enter: "bottom top", leave: "top top", sync: true }),
+      })
+    })
+    document.querySelectorAll<HTMLElement>(".f-ghostnum").forEach((g) => {
+      const section = g.parentElement ?? g
+      animate(g, {
+        y: [90, -90],
+        ease: "linear",
+        autoplay: onScroll({ target: section, enter: "bottom top", leave: "top bottom", sync: true }),
+      })
+    })
+
+    // ---- contour map draws itself as you scroll past ----
+    const contour = document.querySelector<SVGSVGElement>(".f-contour svg")
+    if (contour) {
+      const paths = contour.querySelectorAll("path")
+      if (paths.length) {
+        const drawables = svg.createDrawable(paths)
+        animate(drawables, {
+          draw: ["0 0", "0 1"],
+          ease: "linear",
+          delay: stagger(6),
+          autoplay: onScroll({ target: contour, enter: "bottom top+=15%", leave: "top+=35% top", sync: true }),
+        })
+      }
+    }
+
+    // ---- the silhouette lights up under the cursor ----
+    const lit = document.querySelector<HTMLElement>(".f-sil-lit")
+    if (lit) {
+      let raf = 0
+      const onSil = (e: PointerEvent) => {
+        cancelAnimationFrame(raf)
+        raf = requestAnimationFrame(() => {
+          const r = lit.getBoundingClientRect()
+          lit.style.setProperty("--mx", `${e.clientX - r.left}px`)
+          lit.style.setProperty("--my", `${e.clientY - r.top}px`)
+        })
+      }
+      window.addEventListener("pointermove", onSil, { passive: true })
+      cleanups.push(() => {
+        window.removeEventListener("pointermove", onSil)
+        cancelAnimationFrame(raf)
+      })
     }
 
     // ---- touch: a tap on the empty field lights a brief light ----

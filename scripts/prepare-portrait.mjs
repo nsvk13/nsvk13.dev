@@ -270,6 +270,22 @@ for (let y = 0; y < AH; y++) {
 }
 const asciiJson = JSON.stringify({ width: AW, height: AH, lines }, null, 2);
 
+// large variant: 110 columns, same ramp and 2:1 glyph compensation (no PRNG use here,
+// so the seeded stream — and every PNG above/below — stays byte-identical)
+const AW_LARGE = 110;
+const AH_LARGE = Math.round((H * (AW_LARGE / W)) / 2);
+const asciiSrcLarge = boxResample(pre, W, H, AW_LARGE, AH_LARGE);
+const linesLarge = [];
+for (let y = 0; y < AH_LARGE; y++) {
+  let line = '';
+  for (let x = 0; x < AW_LARGE; x++) {
+    const l = Math.max(0, Math.min(255, asciiSrcLarge[y * AW_LARGE + x]));
+    line += RAMP[Math.round((l / 255) * 9)];
+  }
+  linesLarge.push(line.padEnd(AW_LARGE, ' ')); // exactly 110 chars
+}
+const asciiLargeJson = JSON.stringify({ width: AW_LARGE, height: AH_LARGE, lines: linesLarge }, null, 2);
+
 // ---------------------------------------------------------------- 6. 88x31 banner
 const BW = 88;
 const BH = 31;
@@ -345,6 +361,7 @@ const outputs = [
   [path.join(OUT_PUBLIC, 'avatar-bayer.png'), binaryToPng(bayerMap, W, H)],
   [path.join(OUT_PUBLIC, 'avatar-bands.png'), binaryToPng(bands, W, H)],
   [path.join(OUT_LIB, 'avatar-ascii.json'), Buffer.from(asciiJson + '\n')],
+  [path.join(OUT_LIB, 'avatar-ascii-large.json'), Buffer.from(asciiLargeJson + '\n')],
   [path.join(OUT_PUBLIC, 'banner-88x31.png'), PNG.sync.write(banner, PNG_OPTS)],
 ];
 

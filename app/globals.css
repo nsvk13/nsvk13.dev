@@ -818,3 +818,192 @@ body {
     display: block;
   }
 }
+
+/* ============================================================
+   motion layer II — more life in the field
+   ============================================================ */
+
+/* the living eye */
+.f-eye pre {
+  color: var(--ash);
+}
+.f-eye pre .i {
+  color: #b5b0a6;
+}
+.f-eye pre .p {
+  color: var(--paper);
+}
+.f-eye.noticed pre .p {
+  color: var(--ember);
+}
+
+/* moon path slices */
+.f-moonpath {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+.f-slice {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  background-repeat: no-repeat;
+  background-size: 100% 1600%;
+  image-rendering: pixelated;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+@media (prefers-reduced-motion: reduce) {
+  .f-slice {
+    opacity: 1;
+  }
+}
+
+/* silhouette that reveals under the cursor */
+.f-silhouette {
+  display: inline-block;
+  pointer-events: none;
+}
+.f-silhouette pre {
+  font-size: 6px;
+  line-height: 1.05;
+  color: var(--ghost);
+}
+@media (min-width: 768px) {
+  .f-silhouette pre {
+    font-size: 9px;
+  }
+}
+.f-silhouette .f-sil-lit {
+  position: absolute;
+  inset: 0;
+  color: var(--ash);
+  --mx: -999px;
+  --my: -999px;
+  -webkit-mask-image: radial-gradient(circle 140px at var(--mx) var(--my), #000 0%, rgba(0, 0, 0, 0.6) 45%, transparent 100%);
+  mask-image: radial-gradient(circle 140px at var(--mx) var(--my), #000 0%, rgba(0, 0, 0, 0.6) 45%, transparent 100%);
+}
+
+/* contour map */
+.f-contour {
+  width: 100%;
+  color: var(--wire);
+}
+.f-contour svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.f-contour path {
+  vector-effect: non-scaling-stroke;
+}
+
+/* the pulse travelling along a wire */
+.f-pulse {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 48px;
+  height: 1px;
+  background: var(--ash);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* rubber stamp on the sheet */
+.f-stamp {
+  position: absolute;
+  right: 6%;
+  top: -34px;
+  width: 132px;
+  height: 132px;
+  color: var(--field);
+  opacity: 0.85;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+.f-stamp svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* running line, web 1.0 */
+.f-marquee {
+  overflow: hidden;
+  white-space: nowrap;
+  border-top: 1px solid var(--wire);
+  border-bottom: 1px solid var(--wire);
+  padding: 6px 0;
+}
+.f-marquee-track {
+  display: inline-block;
+  padding-left: 100%;
+}
+
+/* commit activity strip */
+.f-activity {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 28px;
+}
+.f-activity span {
+  display: block;
+  width: 6px;
+  background: var(--ghostmeta);
+  min-height: 1px;
+}
+.f-activity span.now {
+  background: var(--ash);
+}
+
+/* ---- keyframes, all behind the reduced-motion gate ---- */
+@media (prefers-reduced-motion: no-preference) {
+  .grain {
+    animation: f-grain 0.6s steps(6) infinite;
+  }
+  @keyframes f-grain {
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 120px -90px;
+    }
+  }
+  .f-stamp {
+    animation: f-spin 48s linear infinite;
+  }
+  @keyframes f-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .f-marquee-track {
+    animation: f-marquee 42s linear infinite;
+  }
+  @keyframes f-marquee {
+    to {
+      transform: translateX(-100%);
+    }
+  }
+}
+
+/* lights twinkle on their own slow, snapping cycles */
+@media (prefers-reduced-motion: no-preference) {
+  .f-light {
+    animation: f-twinkle var(--tw-dur, 8s) steps(3, end) infinite var(--tw-delay, 0s);
+  }
+  @keyframes f-twinkle {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    40% {
+      opacity: 0.35;
+    }
+    55% {
+      opacity: 0.8;
+    }
+  }
+}

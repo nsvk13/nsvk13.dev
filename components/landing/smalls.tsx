@@ -11,22 +11,29 @@ import { useEffect, useRef, useState } from "react"
 // Becomes a × glyph for a moment when the cursor rests on a link.
 export function CursorEmber() {
   const dotRef = useRef<HTMLDivElement>(null)
+  const trailRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
     if (window.matchMedia("(pointer: coarse)").matches) return
     const dot = dotRef.current
-    if (!dot) return
+    const trailHost = trailRef.current
+    if (!dot || !trailHost) return
 
     let raf = 0
     let visible = false
     const pos = { x: -100, y: -100 }
     const target = { x: -100, y: -100 }
     let overLink = false
+    // afterimages: three ghosts with growing lag
+    const ghosts = Array.from(trailHost.children) as HTMLElement[]
+    const ghostPos = ghosts.map(() => ({ x: -100, y: -100 }))
+    const LAG = [0.07, 0.045, 0.03]
 
     const show = setTimeout(() => {
       visible = true
       dot.style.opacity = "1"
+      ghosts.forEach((g, i) => (g.style.opacity = String(0.5 - i * 0.14)))
     }, 10000)
 
     const onMove = (e: PointerEvent) => {
@@ -43,6 +50,12 @@ export function CursorEmber() {
       pos.y += (target.y - pos.y) * 0.12
       if (visible) {
         dot.style.transform = `translate(${pos.x}px, ${pos.y}px)`
+        ghosts.forEach((g, i) => {
+          const gp = ghostPos[i]
+          gp.x += (pos.x - gp.x) * LAG[i]
+          gp.y += (pos.y - gp.y) * LAG[i]
+          g.style.transform = `translate(${gp.x}px, ${gp.y}px)`
+        })
       }
       raf = requestAnimationFrame(loop)
     }
@@ -58,12 +71,19 @@ export function CursorEmber() {
   }, [])
 
   return (
-    <div
-      ref={dotRef}
-      className="f-cursor-dot"
-      style={{ opacity: 0, fontSize: 10, color: "var(--ember)", lineHeight: 1 }}
-      aria-hidden="true"
-    />
+    <>
+      <div
+        ref={dotRef}
+        className="f-cursor-dot"
+        style={{ opacity: 0, fontSize: 10, color: "var(--ember)", lineHeight: 1 }}
+        aria-hidden="true"
+      />
+      <div ref={trailRef} aria-hidden="true">
+        <div className="f-cursor-dot" style={{ opacity: 0, width: 2, height: 2, background: "var(--ash)" }} />
+        <div className="f-cursor-dot" style={{ opacity: 0, width: 2, height: 2, background: "var(--ghostmeta)" }} />
+        <div className="f-cursor-dot" style={{ opacity: 0, width: 2, height: 2, background: "var(--ghostmeta)" }} />
+      </div>
+    </>
   )
 }
 

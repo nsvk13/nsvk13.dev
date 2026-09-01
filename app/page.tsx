@@ -1,19 +1,20 @@
 import Link from "next/link"
-import type { ReactNode } from "react"
-import { getBuildMeta, getAsciiPortrait, hasPortraitImages } from "@/lib/field-data"
+import type { CSSProperties, ReactNode } from "react"
 import {
-  EYE_ASLEEP,
-  RUIN,
-  PICTO_VIEWLY,
-  PICTO_HODWINI,
-  PICTO_SITE,
-  ATTENDANT,
-  mulberry32,
-} from "@/components/landing/art"
-import FieldEye from "@/components/landing/FieldEye"
+  getBuildMeta,
+  getAsciiPortrait,
+  getAsciiPortraitLarge,
+  getContourSvg,
+  hasPortraitImages,
+  hasPublicFile,
+} from "@/lib/field-data"
+import { EYE_ASLEEP, RUIN, ATTENDANT, mulberry32 } from "@/components/landing/art"
+import LivingEye from "@/components/landing/LivingEye"
 import FieldEngine from "@/components/landing/FieldEngine"
 import Attendant from "@/components/landing/Attendant"
 import Portrait from "@/components/landing/Portrait"
+import MoonPath from "@/components/landing/MoonPath"
+import { Cube, StaticScreen, SmallEye } from "@/components/landing/specimens"
 import { CursorEmber, Coords, KeepLight, Counter } from "@/components/landing/smalls"
 
 export const dynamic = "force-static"
@@ -26,6 +27,8 @@ interface LightSpot {
   x: number
   y: number
   glyph: string
+  dur: number
+  delay: number
 }
 
 function seedLights(count: number, avoid?: { x1: number; x2: number; y1: number; y2: number }): LightSpot[] {
@@ -36,12 +39,27 @@ function seedLights(count: number, avoid?: { x1: number; x2: number; y1: number;
     const x = 6 + rng() * 86
     const y = 10 + rng() * 78
     if (avoid && x > avoid.x1 && x < avoid.x2 && y > avoid.y1 && y < avoid.y2) continue
-    out.push({ x, y, glyph: glyphs[Math.floor(rng() * glyphs.length)] })
+    out.push({
+      x,
+      y,
+      glyph: glyphs[Math.floor(rng() * glyphs.length)],
+      dur: 6 + rng() * 9,
+      delay: -rng() * 12,
+    })
   }
   return out
 }
 
-const HERO_LIGHTS = seedLights(6, { x1: 30, x2: 78, y1: 38, y2: 78 })
+const HERO_LIGHTS = seedLights(7, { x1: 30, x2: 78, y1: 34, y2: 80 })
+
+function lightStyle(l: LightSpot): CSSProperties {
+  return {
+    left: `${l.x}%`,
+    top: `${l.y}%`,
+    ["--tw-dur" as string]: `${l.dur.toFixed(1)}s`,
+    ["--tw-delay" as string]: `${l.delay.toFixed(1)}s`,
+  }
+}
 
 // ---------------------------------------------------------------
 // a printed catalogue label with one segment that never healed
@@ -84,17 +102,47 @@ function Wire({ id, className, label }: { id?: string; className?: string; label
   )
 }
 
+function Stamp({ year }: { year: number }) {
+  return (
+    <div className="f-stamp" aria-hidden="true">
+      <svg viewBox="0 0 100 100">
+        <defs>
+          <path id="stamp-ring" d="M50,50 m-37,0 a37,37 0 1,1 74,0 a37,37 0 1,1 -74,0" />
+        </defs>
+        <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" strokeWidth="1.4" />
+        <circle cx="50" cy="50" r="29" fill="none" stroke="currentColor" strokeWidth="0.8" />
+        <text fontSize="7.4" letterSpacing="1.4" fontFamily="var(--font-mono), monospace" fill="currentColor">
+          <textPath href="#stamp-ring">VERIFIED IN PRODUCTION · FOUND INTACT · REV {year} ·</textPath>
+        </text>
+        <text
+          x="50"
+          y="53.5"
+          textAnchor="middle"
+          fontSize="10"
+          fontFamily="var(--font-mono), monospace"
+          fill="currentColor"
+        >
+          N.S.
+        </text>
+      </svg>
+    </div>
+  )
+}
+
+const MARQUEE =
+  "the field is quiet tonight · nothing here is broken. only tired · somewhere a server is humming for you · permanently under construction. like everyone · he walks here sometimes. do not touch him · end of file. the field continues ·"
+
 const FIELD_MAP_COMMENT = `
 <!--
      field schematic (not to scale)
 
      00 ─────────────·──── wire 01 ──────
-        (eye)                 ·
+        (eye)        [moon path]
      01 ── fig.1 ····· wire 02 ──────────
      02 ── rec.01 rec.02 rec.03 · ruin
      [ one intact sheet ]
-     03 ── log
-     ──── wire 03 ─── 04 (asleep) ───────
+     03 ── log ▁▂▃▅
+     ──── contour ─ wire 03 ─ 04 (asleep)
      ══════ eof wire ═════════ he walks here
 -->
 `
@@ -102,7 +150,12 @@ const FIELD_MAP_COMMENT = `
 export default function Home() {
   const meta = getBuildMeta()
   const asciiLines = getAsciiPortrait()
+  const asciiLarge = getAsciiPortraitLarge()
   const hasImages = hasPortraitImages()
+  const hasMoon = hasPublicFile("generated/moonpath.png")
+  const contourSvg = getContourSvg()
+  const activityMax = Math.max(1, ...meta.activity.map((a) => a.count))
+  const activitySum = meta.activity.reduce((s, a) => s + a.count, 0)
 
   return (
     <main className="f-root min-h-screen pb-16 md:pb-0">
@@ -148,25 +201,20 @@ export default function Home() {
               key={i}
               href="/field"
               className="f-light f-light-ember"
-              style={{ left: `${l.x}%`, top: `${l.y}%` }}
+              style={lightStyle(l)}
               aria-label="a quiet part of the field"
             >
               ·
             </Link>
           ) : (
-            <span
-              key={i}
-              className="f-light"
-              style={{ left: `${l.x}%`, top: `${l.y}%` }}
-              aria-hidden="true"
-            >
+            <span key={i} className="f-light" style={lightStyle(l)} aria-hidden="true">
               {l.glyph}
             </span>
           )
         )}
 
-        <div className="absolute left-[6%] md:left-[38%] top-[38%] md:top-[42%]">
-          <FieldEye />
+        <div className="absolute left-[6%] md:left-[30%] top-[30%] md:top-[30%]">
+          <LivingEye />
           <div className="mt-8 md:-ml-[4ch]">
             <h1 id="hero-name" className="text-[15px] font-mono tracking-wide">
               NIKITA SIMAKIN
@@ -207,22 +255,30 @@ export default function Home() {
         </span>
       </section>
 
-      {/* ============ TRANSIT A ============ */}
-      <section className="f-transit relative h-[55vh]" aria-hidden="true">
-        <span
-          className="f-meta absolute left-[55%] top-[60%]"
-          style={{ textTransform: "none" }}
-          data-decayable=""
-        >
-          the field is quiet tonight.
-        </span>
-        <div className="absolute bottom-0 left-[4%] right-[18%]">
+      {/* ============ TRANSIT A — the moon path ============ */}
+      <section className="f-transit relative pt-[12vh]" aria-label="fig. 0">
+        <div className="f-grid">
+          <div className="col-span-4 md:col-span-10 md:col-start-2">
+            {hasMoon ? (
+              <MoonPath src="/generated/moonpath.png" width={1200} height={560} />
+            ) : (
+              <div className="h-[40vh]" />
+            )}
+            <p className="f-meta mt-3 flex justify-between" style={{ textTransform: "none" }}>
+              <span data-decayable="">fig. 0 — a light on water. transmission damaged, left as is.</span>
+              <span className="hidden md:inline" data-decayable="">
+                the field is quiet tonight.
+              </span>
+            </p>
+          </div>
+        </div>
+        <div className="mt-[18vh] px-[4%] pr-[18%]">
           <Wire label="wire 01" />
         </div>
       </section>
 
       {/* ============ 01 / SELF ============ */}
-      <section id="self" className="relative pt-[10vh] pb-[16vh]" aria-label="about">
+      <section id="self" className="relative pt-[14vh] pb-[16vh]" aria-label="about">
         <div id="contents" className="absolute -top-24" aria-hidden="true" />
         <div className="f-ghostnum left-[28%] top-[2%]" aria-hidden="true">
           01
@@ -241,6 +297,7 @@ export default function Home() {
               className="f-display text-[clamp(2.6rem,9vw,7.5rem)]"
               data-reveal="scramble"
               data-scramble-rare=""
+              data-scroll-spread=""
             >
               SELF
             </h2>
@@ -294,12 +351,15 @@ export default function Home() {
       </section>
 
       {/* ============ TRANSIT B ============ */}
-      <section className="f-transit relative h-[45vh]">
-        <div className="absolute left-[12%] md:left-[66%] top-[30%]">
+      <section className="f-transit relative h-[50vh]">
+        <div className="absolute left-[12%] md:left-[66%] top-[18%]">
           <KeepLight />
-          <p className="f-meta mt-[10vh]" style={{ textTransform: "none" }} data-decayable="">
+          <p className="f-meta mt-[8vh]" style={{ textTransform: "none" }} data-decayable="">
             do not worry about the checkbox.
           </p>
+        </div>
+        <div className="absolute bottom-[10vh] left-0 right-0 f-marquee f-meta" style={{ textTransform: "none" }} aria-hidden="true">
+          <span className="f-marquee-track">{MARQUEE}</span>
         </div>
         <div className="absolute bottom-0 left-[4%] right-[32%]">
           <Wire label="wire 02" />
@@ -320,9 +380,9 @@ export default function Home() {
             <p className="f-meta f-meta-ash mt-2" style={{ textTransform: "none" }}>
               watch together / telegram mini app
             </p>
-            <pre className="f-pre text-[12px] mt-6" aria-hidden="true">
-              {PICTO_VIEWLY.join("\n")}
-            </pre>
+            <div className="mt-6">
+              <StaticScreen />
+            </div>
             <Etikett
               width={44}
               brokenAt={9}
@@ -352,9 +412,9 @@ export default function Home() {
             <p className="f-meta f-meta-ash mt-2" style={{ textTransform: "none" }}>
               minecraft project: banking system, launcher, its own world
             </p>
-            <pre className="f-pre text-[12px] mt-6" aria-hidden="true">
-              {PICTO_HODWINI.join("\n")}
-            </pre>
+            <div className="mt-6">
+              <Cube />
+            </div>
             <Etikett
               width={38}
               brokenAt={21}
@@ -386,9 +446,9 @@ export default function Home() {
             <p className="f-meta f-meta-ash mt-2" style={{ textTransform: "none" }} data-decayable="">
               this site. it is watching you read about itself.
             </p>
-            <pre className="f-pre text-[12px] mt-6" aria-hidden="true">
-              {PICTO_SITE.join("\n")}
-            </pre>
+            <div className="mt-6">
+              <SmallEye />
+            </div>
             <Etikett
               width={40}
               brokenAt={15}
@@ -415,6 +475,7 @@ export default function Home() {
 
       {/* ============ SPEC — the one intact sheet ============ */}
       <section className="f-invert relative py-[12vh] mt-[8vh]" data-stable="" aria-label="capabilities">
+        <Stamp year={meta.buildYear} />
         <span className="f-vert absolute left-[2vw] top-[15%] hidden md:block" style={{ color: "#6b675e" }}>
           spec.sheet — rev {meta.buildYear}.09
         </span>
@@ -458,10 +519,34 @@ export default function Home() {
         </div>
         <div className="f-grid">
           <div className="col-span-4 md:col-span-7 md:col-start-3">
-            <h2 className="f-display text-[clamp(2.2rem,5vw,4rem)]" data-reveal="scramble" data-scramble-rare="">
+            <h2
+              className="f-display text-[clamp(2.2rem,5vw,4rem)]"
+              data-reveal="scramble"
+              data-scramble-rare=""
+              data-scroll-spread=""
+            >
               LOG
             </h2>
             <p className="f-meta mt-3">update history, auto-recovered from git</p>
+
+            {meta.activity.length > 0 && (
+              <div className="mt-8">
+                <div className="f-activity" role="img" aria-label={`${activitySum} commits in the last twelve months`}>
+                  {meta.activity.map((a, i) => (
+                    <span
+                      key={a.month}
+                      className={i === meta.activity.length - 1 ? "now" : undefined}
+                      style={{ height: `${Math.max(1, Math.round((a.count / activityMax) * 28))}px` }}
+                      title={`${a.month} · ${a.count}`}
+                    />
+                  ))}
+                </div>
+                <p className="f-meta mt-2 f-num" style={{ textTransform: "none" }}>
+                  {meta.activity[0].month} → {meta.activity[meta.activity.length - 1].month} · {activitySum} commits
+                </p>
+              </div>
+            )}
+
             <p className="mt-8 mb-4">
               <span className="f-dot text-[12px]">更新履歴</span>{" "}
               <span className="f-meta f-meta-ash">/ update log</span>
@@ -508,19 +593,40 @@ export default function Home() {
         </span>
       </section>
 
-      {/* ============ TRANSIT C ============ */}
-      <section className="f-transit relative h-[40vh]" aria-hidden="true">
-        <span className="f-meta absolute left-[22%] top-1/2" style={{ textTransform: "none" }} data-decayable="">
-          somewhere a server is humming for you.
-        </span>
-        <div className="absolute bottom-0 left-[28%] right-[4%]">
+      {/* ============ TRANSIT C — survey of the field ============ */}
+      <section className="f-transit relative pt-[10vh]" aria-label="survey">
+        {contourSvg ? (
+          <div className="f-grid">
+            <div className="col-span-4 md:col-span-12">
+              <div className="f-contour" aria-hidden="true" dangerouslySetInnerHTML={{ __html: contourSvg }} />
+              <p className="f-meta mt-2 flex justify-between" style={{ textTransform: "none" }}>
+                <span>survey of the field — elevation unknown</span>
+                <span data-decayable="">somewhere a server is humming for you.</span>
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="h-[30vh]">
+            <span className="f-meta absolute left-[22%] top-1/2" style={{ textTransform: "none" }} data-decayable="">
+              somewhere a server is humming for you.
+            </span>
+          </div>
+        )}
+        <div className="mt-[10vh] pl-[28%] pr-[4%]">
           <Wire label="wire 03" />
         </div>
       </section>
 
       {/* ============ 04 / SIGNALS ============ */}
       <section id="signals" className="relative h-[100svh]" aria-label="contact">
-        <div className="absolute left-[8%] md:left-[35%] top-[14%]">
+        {asciiLarge && (
+          <div className="f-silhouette absolute right-[-6%] md:right-[2%] bottom-[4%] md:top-[6%]" aria-hidden="true">
+            <pre className="f-pre">{asciiLarge.join("\n")}</pre>
+            <pre className="f-pre f-sil-lit">{asciiLarge.join("\n")}</pre>
+          </div>
+        )}
+
+        <div className="absolute left-[8%] md:left-[18%] top-[14%]">
           <pre className="f-pre text-[10px] md:text-[12px]" aria-hidden="true">
             {EYE_ASLEEP.join("\n")}
           </pre>
@@ -529,7 +635,7 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="absolute left-[10%] md:left-[18%] top-[56%]">
+        <div className="absolute left-[10%] md:left-[14%] top-[52%]">
           <span className="f-light static mr-2" aria-hidden="true">
             ·
           </span>
@@ -537,7 +643,7 @@ export default function Home() {
             contact@nsvk13.dev
           </a>
         </div>
-        <div className="absolute left-[55%] md:left-[58%] top-[48%]">
+        <div className="absolute left-[55%] md:left-[44%] top-[44%]">
           <span className="f-light static mr-2" aria-hidden="true">
             ·
           </span>
@@ -545,7 +651,7 @@ export default function Home() {
             t.me/nsvkjournal
           </a>
         </div>
-        <div className="absolute left-[20%] md:left-[42%] top-[70%]">
+        <div className="absolute left-[20%] md:left-[30%] top-[66%]">
           <span className="f-light static mr-2" aria-hidden="true">
             ·
           </span>
@@ -553,7 +659,7 @@ export default function Home() {
             github.com/nsvk13
           </a>
         </div>
-        <div className="absolute left-[48%] md:left-[72%] top-[63%]">
+        <div className="absolute left-[48%] md:left-[52%] top-[60%]">
           <span className="f-light static mr-2" aria-hidden="true">
             ·
           </span>

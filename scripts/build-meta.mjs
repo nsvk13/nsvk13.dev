@@ -84,6 +84,28 @@ if (logRaw !== null && logRaw !== "") {
     .filter(Boolean);
 }
 
+// --- activity: commits per month, last 12 months (UTC) -----------------
+const activity = [];
+{
+  const buckets = new Map();
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - i, 1));
+    const key = `${d.getUTCFullYear()}.${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
+    buckets.set(key, 0);
+  }
+  const all = git("git log --format=%ct");
+  if (all) {
+    for (const line of all.split("\n")) {
+      const ts = Number.parseInt(line, 10);
+      if (!Number.isFinite(ts)) continue;
+      const d = new Date(ts * 1000);
+      const key = `${d.getUTCFullYear()}.${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
+      if (buckets.has(key)) buckets.set(key, buckets.get(key) + 1);
+    }
+  }
+  for (const [month, count] of buckets) activity.push({ month, count });
+}
+
 // --- write -------------------------------------------------------------
 const meta = {
   shortHash,
@@ -92,6 +114,7 @@ const meta = {
   commitCount,
   lastUpdatedDays,
   log,
+  activity,
 };
 
 const json = `${JSON.stringify(meta, null, 2)}\n`;
