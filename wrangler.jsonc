@@ -23,4 +23,9 @@
       "bucket_name": "nsvk13dev-opennext-cache"
     }
   ]
+  // Optional: the footer visitor counter uses this KV binding.
+  // Create a namespace (`wrangler kv namespace create VISITORS`),
+  // paste its id below and uncomment. Without it the counter
+  // honestly prints "№ unknown".
+  // ,"kv_namespaces": [{ "binding": "VISITORS", "id": "<namespace-id>" }]
 }
