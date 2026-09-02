@@ -166,12 +166,17 @@ export default function LivingEye() {
     }
 
     frame()
+    const onBlink = () => {
+      blinkFrames = [0.4, 0.85, 1, 1, 0.7, 0.3, 0.45, 0.9, 1, 0.6, 0.2]
+    }
+    window.addEventListener("desk:blink", onBlink)
     const iv = setInterval(frame, 80)
 
     return () => {
       disposed = true
       clearInterval(iv)
       io.disconnect()
+      window.removeEventListener("desk:blink", onBlink)
       window.removeEventListener("pointermove", onMove)
       root.removeEventListener("mouseenter", enter)
       root.removeEventListener("mouseleave", leave)
