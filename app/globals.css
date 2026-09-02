@@ -818,3 +818,696 @@ body {
     display: block;
   }
 }
+
+/* ============================================================
+   motion layer II — more life in the field
+   ============================================================ */
+
+/* the living eye */
+.f-eye pre {
+  color: var(--ash);
+}
+.f-eye pre .i {
+  color: #b5b0a6;
+}
+.f-eye pre .p {
+  color: var(--paper);
+}
+.f-eye.noticed pre .p {
+  color: var(--ember);
+}
+
+/* moon path slices */
+.f-moonpath {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+.f-slice {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  background-repeat: no-repeat;
+  background-size: 100% 1600%;
+  image-rendering: pixelated;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+@media (prefers-reduced-motion: reduce) {
+  .f-slice {
+    opacity: 1;
+  }
+}
+
+/* silhouette that reveals under the cursor */
+.f-silhouette {
+  display: inline-block;
+  pointer-events: none;
+}
+.f-silhouette pre {
+  font-size: 6px;
+  line-height: 1.05;
+  color: var(--ghost);
+}
+@media (min-width: 768px) {
+  .f-silhouette pre {
+    font-size: 9px;
+  }
+}
+.f-silhouette .f-sil-lit {
+  position: absolute;
+  inset: 0;
+  color: var(--ash);
+  --mx: -999px;
+  --my: -999px;
+  -webkit-mask-image: radial-gradient(circle 140px at var(--mx) var(--my), #000 0%, rgba(0, 0, 0, 0.6) 45%, transparent 100%);
+  mask-image: radial-gradient(circle 140px at var(--mx) var(--my), #000 0%, rgba(0, 0, 0, 0.6) 45%, transparent 100%);
+}
+
+/* contour map */
+.f-contour {
+  width: 100%;
+  color: var(--wire);
+}
+.f-contour svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.f-contour path {
+  vector-effect: non-scaling-stroke;
+}
+
+/* the pulse travelling along a wire */
+.f-pulse {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 48px;
+  height: 1px;
+  background: var(--ash);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* rubber stamp on the sheet */
+.f-stamp {
+  position: absolute;
+  right: 6%;
+  top: -34px;
+  width: 132px;
+  height: 132px;
+  color: var(--field);
+  opacity: 0.85;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+.f-stamp svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* running line, web 1.0 */
+.f-marquee {
+  overflow: hidden;
+  white-space: nowrap;
+  border-top: 1px solid var(--wire);
+  border-bottom: 1px solid var(--wire);
+  padding: 6px 0;
+}
+.f-marquee-track {
+  display: inline-block;
+  padding-left: 100%;
+}
+
+/* commit activity strip */
+.f-activity {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 28px;
+}
+.f-activity span {
+  display: block;
+  width: 6px;
+  background: var(--ghostmeta);
+  min-height: 1px;
+}
+.f-activity span.now {
+  background: var(--ash);
+}
+
+/* ---- keyframes, all behind the reduced-motion gate ---- */
+@media (prefers-reduced-motion: no-preference) {
+  .grain {
+    animation: f-grain 0.6s steps(6) infinite;
+  }
+  @keyframes f-grain {
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 120px -90px;
+    }
+  }
+  .f-stamp {
+    animation: f-spin 48s linear infinite;
+  }
+  @keyframes f-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .f-marquee-track {
+    animation: f-marquee 42s linear infinite;
+  }
+  @keyframes f-marquee {
+    to {
+      transform: translateX(-100%);
+    }
+  }
+}
+
+/* lights twinkle on their own slow, snapping cycles */
+@media (prefers-reduced-motion: no-preference) {
+  .f-light {
+    animation: f-twinkle var(--tw-dur, 8s) steps(3, end) infinite var(--tw-delay, 0s);
+  }
+  @keyframes f-twinkle {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    40% {
+      opacity: 0.35;
+    }
+    55% {
+      opacity: 0.8;
+    }
+  }
+}
+
+/* ============================================================
+   UNKNOWN VIEWER — the desktop of found files
+   ============================================================ */
+
+.desk-root {
+  background: transparent;
+  color: var(--paper);
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+  padding-top: 28px;
+  overflow-x: clip;
+}
+
+.wallpaper {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-color: var(--field);
+  background-image: url("/generated/moonpath.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  opacity: 0.62;
+  pointer-events: none;
+}
+.wallpaper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(6, 6, 6, 0.1), rgba(6, 6, 6, 0.55));
+}
+
+.scan {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg, transparent 0 3px, rgba(0, 0, 0, 0.26) 3px 4px);
+}
+body.no-scan .scan {
+  display: none;
+}
+
+html.inverted {
+  filter: invert(1);
+}
+
+/* --- desktop canvas --- */
+.desk {
+  position: relative;
+}
+@media (min-width: 1024px) {
+  .desk {
+    height: 330vh;
+  }
+  .w {
+    position: absolute;
+  }
+  .m-desk {
+    display: flex;
+  }
+}
+@media (max-width: 1023px) {
+  .desk {
+    padding: 22px 10px 150px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .w {
+    position: relative;
+    width: auto !important;
+    left: auto !important;
+    top: auto !important;
+    height: auto !important;
+  }
+  .m-desk {
+    display: none !important;
+  }
+  .icon {
+    display: none;
+  }
+}
+
+/* --- windows --- */
+.w {
+  background: var(--field);
+  border: 1px solid var(--paper);
+  box-shadow: 8px 8px 0 #000;
+  color: var(--paper);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-family: var(--font-mono), monospace;
+  font-variant-ligatures: none;
+}
+.w.is-closed {
+  display: none;
+}
+.w-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--paper);
+  color: var(--field);
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 6px 8px;
+  cursor: grab;
+  user-select: none;
+  gap: 12px;
+}
+.w-title:active {
+  cursor: grabbing;
+}
+.w-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.w-btns {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.w-btns span {
+  display: inline-block;
+  border: 1px solid var(--field);
+  width: 14px;
+  height: 14px;
+  line-height: 12px;
+  text-align: center;
+  font-size: 10px;
+  cursor: pointer;
+}
+.w-btns span:hover {
+  background: var(--field);
+  color: var(--paper);
+}
+.w-body {
+  padding: 16px 18px;
+  position: relative;
+  min-height: 0;
+  font-size: 15px;
+  line-height: 1.65;
+}
+.w-body.tight {
+  padding: 0;
+}
+.w-status {
+  border-top: 1px solid var(--wire);
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--ash);
+  padding: 5px 8px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.w-paper {
+  background: var(--paper);
+  color: var(--field);
+}
+.w-paper .w-title {
+  background: var(--field);
+  color: var(--paper);
+}
+.w-paper .w-btns span {
+  border-color: var(--paper);
+}
+.w-paper .w-status {
+  color: #6b675e;
+  border-top-color: #cfc9bc;
+}
+.w-paper ::selection {
+  background: var(--field);
+  color: var(--paper);
+}
+.w a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.w a:hover {
+  background: var(--paper);
+  color: var(--field);
+  text-decoration: none;
+}
+.w-paper a:hover {
+  background: var(--field);
+  color: var(--paper);
+}
+
+/* big type over the portrait */
+.w-over {
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-stretch: 75%;
+  font-weight: 600;
+  font-size: clamp(3.4rem, 8.5vw, 10rem);
+  line-height: 0.82;
+  letter-spacing: -0.03em;
+  color: var(--paper);
+  mix-blend-mode: difference;
+  pointer-events: none;
+  text-transform: uppercase;
+}
+.w-annot {
+  position: absolute;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: var(--field);
+  border: 1px solid var(--paper);
+  padding: 3px 6px;
+  pointer-events: none;
+}
+.w-annot::before {
+  content: "";
+  position: absolute;
+  left: -46px;
+  top: 50%;
+  width: 46px;
+  height: 1px;
+  background: var(--paper);
+}
+
+/* datamosh slices */
+.slices {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: var(--field);
+}
+.slice {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  will-change: transform;
+}
+
+/* menu bar */
+.menubar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 28px;
+  background: var(--field);
+  border-bottom: 1px solid var(--paper);
+  z-index: 200;
+  display: flex;
+  align-items: stretch;
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+  color: var(--paper);
+}
+.menubar .brand {
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  letter-spacing: 0.06em;
+  border-right: 1px solid var(--wire);
+}
+.menubar .m {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+}
+.menubar .m-btn {
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  padding: 0 11px;
+  cursor: default;
+  height: 100%;
+}
+.menubar .m.open .m-btn,
+.menubar .m-btn:hover {
+  background: var(--paper);
+  color: var(--field);
+}
+.menubar .spacer {
+  flex: 1;
+}
+.menubar .m-right {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  color: var(--ash);
+  border-left: 1px solid var(--wire);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+.dd {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 240px;
+  background: var(--field);
+  color: var(--paper);
+  border: 1px solid var(--paper);
+  box-shadow: 6px 6px 0 #000;
+  padding: 4px 0;
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+}
+.dd .it {
+  display: flex;
+  justify-content: space-between;
+  gap: 28px;
+  padding: 5px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+}
+.dd .it:hover {
+  background: var(--paper);
+  color: var(--field);
+}
+.dd .it.dim {
+  color: var(--ghostmeta);
+  cursor: default;
+}
+.dd .it.dim:hover {
+  background: none;
+  color: var(--ghostmeta);
+}
+.dd .hint {
+  color: var(--ash);
+  font-size: 11px;
+}
+.dd .it:hover .hint {
+  color: var(--field);
+}
+.dd kbd {
+  font-family: inherit;
+}
+.dd .sep {
+  height: 1px;
+  background: var(--wire);
+  margin: 4px 0;
+}
+
+/* desktop icons */
+.icon {
+  position: absolute;
+  width: 84px;
+  text-align: center;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--paper);
+  text-decoration: none;
+  z-index: 5;
+}
+.icon pre {
+  margin: 0 auto 6px;
+  width: 44px;
+  border: 1px solid var(--paper);
+  background: var(--field);
+  font-size: 11px;
+  line-height: 1.25;
+  padding: 4px 0;
+  color: var(--paper);
+}
+.icon:hover pre {
+  background: var(--paper);
+  color: var(--field);
+}
+
+/* file browser */
+.fb {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.fb th {
+  text-align: left;
+  color: var(--ash);
+  border-bottom: 1px solid var(--paper);
+  font-weight: 400;
+  padding: 4px 8px;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.fb td {
+  padding: 7px 8px;
+  border-bottom: 1px solid var(--wire);
+  vertical-align: top;
+}
+.fb tbody tr:hover td {
+  background: var(--paper);
+  color: var(--field);
+}
+.fb tr.dim td {
+  color: var(--ghostmeta);
+}
+.fb tr.dim:hover td {
+  background: none;
+  color: var(--ghostmeta);
+}
+.specimens {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+.specimens > div {
+  border: 1px solid var(--wire);
+  padding: 8px;
+  min-height: 120px;
+}
+.specimens .cap {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ash);
+  margin-bottom: 6px;
+}
+@media (max-width: 640px) {
+  .specimens {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* walker */
+.walker-host {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 0;
+  z-index: 180;
+  pointer-events: none;
+}
+.walker {
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  margin: 0;
+  font-family: var(--font-mono), monospace;
+  font-size: 14px;
+  line-height: 1.25;
+  color: var(--paper);
+  white-space: pre;
+  will-change: transform;
+  text-shadow: 0 0 0 var(--field), 1px 1px 0 var(--field);
+}
+
+/* full-width tear used by the glitch scheduler */
+.tear {
+  position: fixed;
+  left: 0;
+  width: 100vw;
+  height: 7px;
+  background: var(--paper);
+  mix-blend-mode: difference;
+  pointer-events: none;
+  z-index: 160;
+}
+
+/* wallpaper drift, gated */
+@media (prefers-reduced-motion: no-preference) {
+  .wallpaper {
+    animation: f-wall 90s linear infinite alternate;
+  }
+  @keyframes f-wall {
+    from {
+      background-position: 50% 45%;
+    }
+    to {
+      background-position: 50% 55%;
+    }
+  }
+}
+
+/* log rows inside windows: subjects truncate instead of overflowing */
+.w .f-logrow > span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex-shrink: 1;
+}

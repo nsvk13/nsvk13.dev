@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build:posts": "bun run scripts/build-posts.ts",
-    "build:assets": "bun run scripts/prepare-portrait.mjs && bun run scripts/build-meta.mjs",
+    "build:assets": "bun run scripts/prepare-portrait.mjs && bun run scripts/prepare-art.mjs && bun run scripts/build-meta.mjs",
     "predev": "bun run build:posts && bun run build:assets",
     "prebuild": "bun run build:posts && bun run build:assets",
     "dev": "next dev",
